@@ -1,0 +1,32 @@
+0.  虚拟硬件定义
+屏幕: 128x64 黑白点阵
+按键: 上下左右AB，一共6个按键
+RAM: 64K，即wasm的一个page
+ROM: 64K
+SAV: 4K
+
+1.  WASM里面需要实现的API函数
+- void vinit(void)
+初始化函数，在程序启动时执行一次。
+- void vloop_once(void)
+在loop之后，程序运行过程中会被以不高于60帧的频率被调用。
+
+2.  WASM运行时里面实现的函数 (在env命名空间下)
+- int32 get_extra_feature(void)
+获取运行时支持的特性，一个bit对应一个特性。
+- void put_ch(int32)
+输出一个字符，用于调试。
+- int32 ticks_ms(void)
+获取微秒级别的时间戳。
+- void scr_pixel(int32 x, int32 y, int32 color)
+在屏幕上绘制一个像素。
+- void scr_refresh(void)
+将屏幕缓冲区内的内容刷新到屏幕。
+- int32 kpd_query(void)
+获取按键状态，一个bit对应一个按键。
+- int32 read_save(int32 offset)
+读取存档中的一个字节
+- void write_save(int32 offset, int32 byte)
+向存档中写入一个字节
+- void commit_save(void)
+提交存档的更改，真正写入存档

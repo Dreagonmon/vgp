@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Virtual Game Player</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        html,
+        body,
+        .full {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background-color: lightgray;
+        }
+
+        .vcenterbox {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #screen {
+            background-color: black;
+            image-rendering: pixelated;
+        }
+
+        .control_panel {
+            display: none;
+        }
+
+        @media (orientation: portrait) {
+            .control_panel {
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                margin-top: 2rem;
+                gap: 4rem;
+            }
+
+            .ctl {
+                flex: 1 1 auto;
+                display: flex;
+                flex-direction: row;
+            }
+
+            .cleft {
+                justify-content: left;
+                padding-left: 2rem;
+            }
+
+            .cright {
+                justify-content: right;
+                padding-right: 2rem;
+            }
+
+            .dpad {
+                display: grid;
+                grid-template-rows: 1fr 1fr 1fr;
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            .ab {
+                display: grid;
+                grid-template-rows: 1fr 1fr;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .btn {
+                width: 3rem;
+                height: 3rem;
+                border-radius: 3rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                user-select: none;
+            }
+
+            .key {
+                background-color: blueviolet;
+                color: white;
+            }
+        }
+    </style>
+    <script type="module">
+        import { vgp_load_wasm, vgp_init_save, vgp_set_on_screen_refresh_callback, vgp_init_wasm, vgp_loop_once, vgp_set_key_state } from "./vgp.js";
+        import {
+            KEY_UP,
+            KEY_DOWN,
+            KEY_LEFT,
+            KEY_RIGHT,
+            KEY_A,
+            KEY_B,
+        } from "./vgp.js";
+        const resizeHandler = () => {
+            const screen = document.querySelector("#screen");
+            const scale1 = Math.floor(document.body.clientWidth / 128);
+            const scale2 = Math.floor(document.body.clientHeight / 64);
+            const scale = Math.min(scale1, scale2);
+            screen.width = 128 * scale;
+            screen.height = 64 * scale;
+            screen.getContext("2d").imageSmoothingEnabled = false;
+        };
+        /**
+         * @param {HTMLCanvasElement} vm_screen
+         */
+        const on_fresh = (vm_screen) => {
+            const screen = document.querySelector("#screen");
+            screen.getContext("2d").drawImage(vm_screen, 0, 0, screen.width, screen.height);
+        };
+        const run_loop = () => {
+            vgp_loop_once();
+            requestAnimationFrame(run_loop);
+        };
+        const load_and_start = async (wasm) => {
+            await vgp_load_wasm(wasm);
+            vgp_init_save("test");
+            vgp_set_on_screen_refresh_callback(on_fresh);
+            vgp_init_wasm();
+            run_loop();
+        };
+        window.addEventListener("resize", resizeHandler);
+        window.addEventListener("contextmenu", (event) => { event.preventDefault(); });
+        window.addEventListener("keydown", (ev) => {
+            if (ev.code === "KeyW") {
+                vgp_set_key_state(KEY_UP, true);
+            } else if (ev.code === "KeyA") {
+                vgp_set_key_state(KEY_LEFT, true);
+            } else if (ev.code === "KeyD") {
+                vgp_set_key_state(KEY_RIGHT, true);
+            } else if (ev.code === "KeyS") {
+                vgp_set_key_state(KEY_DOWN, true);
+            } else if (ev.code === "KeyK") {
+                vgp_set_key_state(KEY_A, true);
+            } else if (ev.code === "KeyJ") {
+                vgp_set_key_state(KEY_B, true);
+            }
+        });
+        window.addEventListener("keyup", (ev) => {
+            if (ev.code === "KeyW") {
+                vgp_set_key_state(KEY_UP, false);
+            } else if (ev.code === "KeyA") {
+                vgp_set_key_state(KEY_LEFT, false);
+            } else if (ev.code === "KeyD") {
+                vgp_set_key_state(KEY_RIGHT, false);
+            } else if (ev.code === "KeyS") {
+                vgp_set_key_state(KEY_DOWN, false);
+            } else if (ev.code === "KeyK") {
+                vgp_set_key_state(KEY_A, false);
+            } else if (ev.code === "KeyJ") {
+                vgp_set_key_state(KEY_B, false);
+            }
+        });
+        window.addEventListener("load", async () => {
+            resizeHandler();
+            const wasm = await (await fetch("debug.wasm")).arrayBuffer();
+            await load_and_start(wasm);
+            const keys = document.querySelectorAll(".key");
+            keys[ 0 ].addEventListener("touchstart", vgp_set_key_state.bind(undefined, KEY_UP, true));
+            keys[ 0 ].addEventListener("touchend", vgp_set_key_state.bind(undefined, KEY_UP, false));
+            keys[ 1 ].addEventListener("touchstart", vgp_set_key_state.bind(undefined, KEY_LEFT, true));
+            keys[ 1 ].addEventListener("touchend", vgp_set_key_state.bind(undefined, KEY_LEFT, false));
+            keys[ 2 ].addEventListener("touchstart", vgp_set_key_state.bind(undefined, KEY_RIGHT, true));
+            keys[ 2 ].addEventListener("touchend", vgp_set_key_state.bind(undefined, KEY_RIGHT, false));
+            keys[ 3 ].addEventListener("touchstart", vgp_set_key_state.bind(undefined, KEY_DOWN, true));
+            keys[ 3 ].addEventListener("touchend", vgp_set_key_state.bind(undefined, KEY_DOWN, false));
+            keys[ 4 ].addEventListener("touchstart", vgp_set_key_state.bind(undefined, KEY_A, true));
+            keys[ 4 ].addEventListener("touchend", vgp_set_key_state.bind(undefined, KEY_A, false));
+            keys[ 5 ].addEventListener("touchstart", vgp_set_key_state.bind(undefined, KEY_B, true));
+            keys[ 5 ].addEventListener("touchend", vgp_set_key_state.bind(undefined, KEY_B, false));
+        });
+    </script>
+</head>
+
+<body>
+    <div class="full vcenterbox">
+        <canvas id="screen"></canvas>
+        <div class="control_panel">
+            <div class="ctl cleft">
+                <div class="dpad">
+                    <div class="btn"></div>
+                    <div class="btn key"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                            class="css-i6dzq1">
+                            <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg></div>
+                    <div class="btn"></div>
+                    <div class="btn key"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                            class="css-i6dzq1">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg></div>
+                    <div class="btn"></div>
+                    <div class="btn key"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                            class="css-i6dzq1">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg></div>
+                    <div class="btn"></div>
+                    <div class="btn key"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+                            stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                            class="css-i6dzq1">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg></div>
+                    <div class="btn"></div>
+                </div>
+            </div>
+            <div class="ctl cright">
+                <div class="ab">
+                    <div class="btn"></div>
+                    <div class="btn key">A</div>
+                    <div class="btn key">B</div>
+                    <div class="btn"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

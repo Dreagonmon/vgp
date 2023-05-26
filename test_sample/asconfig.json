@@ -1,0 +1,36 @@
+{
+  "entries": [
+    "./assembly/index.ts"
+  ],
+  "targets": {
+    "debug": {
+      "outFile": "build/debug.wasm",
+      "textFile": "build/debug.wat",
+      "sourceMap": true,
+      "debug": true
+    },
+    "release": {
+      "outFile": "build/release.wasm",
+      "textFile": "build/release.wat",
+      "sourceMap": true,
+      "optimize": true,
+      "optimizeLevel": 3,
+      "shrinkLevel": 2,
+      "converge": true,
+      "noAssert": false
+    }
+  },
+  "options": {
+    "bindings": false,
+    "runtime": "incremental",
+    "importMemory": true,
+    "initialMemory": 1,
+    "maximumMemory": 1,
+    "noExportMemory": true,
+    "zeroFilledMemory": true,
+    "memoryBase": 4096,
+    "use": [
+      "abort="
+    ]
+  }
+}
