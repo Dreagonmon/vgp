@@ -1,17 +1,21 @@
 // The entry file of your WebAssembly module.
-import { getFeature } from "./env.ts";
+import { getFeature, VFEATURE_SCREEN_SIZE } from "./env.ts";
+
+let SCRW: u16 = 0;
+let SCRH: u16 = 0;
+const updateScreenSize = (): void => {
+  const data: i32 = getFeature(VFEATURE_SCREEN_SIZE);
+  const width: u16 = u16((data >> 12) & 0xFFF);
+  const height: u16 = u16(data & 0xFFF);
+  SCRW = width;
+  SCRH = height;
+};
 
 export function vinit(): void {
-  const arr = new Uint8Array(1024);
-  arr.forEach((num) => {
-    num += 1;
-  });
-  let i = 0;
-  i += 1;
-  if (i == 0) {
-    let f = getFeature(0x00);
-  }
-  // console.log("init");
+  updateScreenSize();
+  console.log(`Screen Width: ${SCRW}`);
+  console.log(`Screen Height: ${SCRH}`);
+  console.log("inited.");
 }
 
 export function vloop(): void {

@@ -19,6 +19,7 @@ CFLAGS += -lm
 # include header
 CFLAGS += -Iwasm3
 CFLAGS += -Ivgp
+CFLAGS += -Iimpl_sdl
 
 LFLAGS =
 
@@ -31,7 +32,7 @@ size: $(OBJ)
 -include $(DEP)
 
 $(TARGET): $(OBJ)
-	mkdir -p build
+	mkdir -p $(BUILD)
 	$(CC) $(CFLAGS) $^ $(LFLAGS) -o $@
 	# rm -f $(OBJ)
 

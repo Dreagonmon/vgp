@@ -30,7 +30,8 @@
     "zeroFilledMemory": true,
     "memoryBase": 4096,
     "use": [
-      "abort="
+      "abort=assembly/env/system_exit",
+      "console=assembly/env/console"
     ]
   }
 }

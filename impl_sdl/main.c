@@ -4,8 +4,14 @@
 #include <stdbool.h>
 #include <vgp.h>
 #include <vgp_error.h>
+#include <vgp_impl_0001.h>
+
+void test() {
+    //
+}
 
 int main() {
+    test();
     // load test wasm
     uint8_t *wasm = malloc(65536);
     FILE *file = fopen("test_sample/build/debug.wasm", "rb");

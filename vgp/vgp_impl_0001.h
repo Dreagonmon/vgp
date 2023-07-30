@@ -4,8 +4,10 @@
 #ifndef vgp_impl_0000_h
 #define vgp_impl_0000_h
 
-#include <vgp_config.h>
 #include <stdint.h>
+
+#define VCOLOR_FORMAT_BW 1
+#define VCOLOR_FORMAT_RGB888 2
 
 int32_t vgp_screen_get_size(void);
 int32_t vgp_screen_get_color_format(void);

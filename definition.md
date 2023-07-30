@@ -38,7 +38,7 @@
 
 所有Feature里的方法都是通过call[n]方法来调用的。
 
-### Features Must Have
+### Features Must Have 0x0001
 
 * void screen_pixel(int32 x, int32 y, int32 color)
 
@@ -62,7 +62,7 @@
 
   退出程序
 
-### Feature Gamepad 0x02
+### Feature Gamepad 0x0002
 
 * int32 gamepad_status(void)
 
@@ -77,7 +77,7 @@
   - bit1: 按键A
   - bit0: 按键B
 
-### Feature Save 0x03
+### Feature Save 0x0003
 
 * void save_write(int32 offset, int32 byte)
 
@@ -91,7 +91,7 @@
 
   读取1字节存档，写入之后立刻就能读取到，无论是否写入存储设备
 
-### Feature Real Time Clock 0x04
+### Feature Real Time Clock 0x0004
 
 真实时间计算公式为: 时间 = ((offset & 0x7FFFFF) << 31) | (rtc & 0x7FFFFF)
 

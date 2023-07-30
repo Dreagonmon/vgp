@@ -1,3 +1,4 @@
+#include <vgp_config.h>
 #include <vgp.h>
 #include <vgp_error.h>
 #include <vgp_runtime.h>

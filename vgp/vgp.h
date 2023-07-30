@@ -1,7 +1,6 @@
 #ifndef vgp_h
 #define vgp_h
 
-#include <vgp_config.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <wasm3.h>
