@@ -36,7 +36,16 @@ export const VFUNC_RTC_SET_OFFSET: i32 = 0x000401;
 export const VFUNC_RTC_GET_TIME: i32 = 0x000402;
 export const VFUNC_RTC_SET_TIME: i32 = 0x000403;
 
-const CHAR_QST: i32 = 0x3F;
+const INT32_MAX: i32 = 0x7FFFFFFF;
+
+export const cpu_ticks_ms = (): i32 => {
+    return call0(VFUNC_CPU_TICKS_MS);
+};
+
+export const ticks_diff = (t2: i32, t1: i32): i32 => {
+    let half: i32 = (INT32_MAX / 2) + 1;
+    return ((t2 - t1 + half) & INT32_MAX) - half;
+}
 
 export const trace_put_char = (ch: i32): void => {
     call1(VFUNC_TRACE_PUT_CHAR, ch & 0x7F);

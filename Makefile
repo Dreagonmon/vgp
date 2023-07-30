@@ -13,7 +13,7 @@ CFLAGS += -O0 -g3
 else
 CFLAGS += -Os
 endif
-CFLAGS += -std=c17 -Wall
+CFLAGS += -std=gnu17 -Wall
 # library
 CFLAGS += -lm
 # include header

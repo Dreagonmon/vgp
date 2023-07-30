@@ -1,9 +1,11 @@
 #include <vgp_impl_0001.h>
+#include <hw.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
-#define _SCR_W 128
-#define _SCR_H 64
+#define _SCR_W SCREEN_WIDTH
+#define _SCR_H SCREEN_HEIGHT
 #define _SCR_FMT VCOLOR_FORMAT_BW
 // _MASK only works if _SCR_W and _SCR_H is 2^n
 #define _W_MASK (UINT32_MAX - _SCR_W + 1)
@@ -33,7 +35,9 @@ void vgp_screen_pixel(int32_t x, int32_t y, int32_t c) {
 }
 
 int32_t vgp_cpu_ticks_ms(void) {
-    return 0;
+    struct timespec tm;
+    clock_gettime(CLOCK_MONOTONIC_COARSE, &tm);
+    return (tm.tv_nsec / 1000000) & INT32_MAX;
 }
 
 void vgp_trace_put_char(int32_t ascii_byte) {
