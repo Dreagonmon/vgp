@@ -2,7 +2,7 @@
 #include <hw.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <SDL2/SDL.h>
 
 #define _SCR_W SCREEN_WIDTH
 #define _SCR_H SCREEN_HEIGHT
@@ -31,13 +31,12 @@ void vgp_screen_pixel(int32_t x, int32_t y, int32_t c) {
     if ( x & _W_MASK || y & _H_MASK) {
         return;
     }
-    printf("Screen Pixel: %d, %d | %d\n", x, y, c);
+    // printf("Screen Pixel: %d, %d | %d\n", x, y, c);
+    __hw_draw_pixel(x, y, c);
 }
 
 int32_t vgp_cpu_ticks_ms(void) {
-    struct timespec tm;
-    clock_gettime(CLOCK_MONOTONIC_COARSE, &tm);
-    return (tm.tv_nsec / 1000000) & INT32_MAX;
+    return __hw_ticks_ms();
 }
 
 void vgp_trace_put_char(int32_t ascii_byte) {
@@ -51,6 +50,5 @@ void vgp_trace_put_char(int32_t ascii_byte) {
 }
 
 void vgp_system_exit(void) {
-    printf("System Exit.\n");
-    exit(0);
+    __hw_notify_quit();
 }

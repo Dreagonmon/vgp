@@ -3,33 +3,36 @@ import {
   getFeature,
   cpu_ticks_ms,
   ticks_diff,
-  VFEATURE_SCREEN_SIZE,
 } from "./env.ts";
+import {
+  fill_screen,
+  get_screen_height,
+  get_screen_width,
+  screen_init,
+} from "./bwscreen.ts";
 
-let SCRW: u16 = 0;
-let SCRH: u16 = 0;
-const updateScreenSize = (): void => {
-  const data: i32 = getFeature(VFEATURE_SCREEN_SIZE);
-  const width: u16 = u16((data >> 12) & 0xFFF);
-  const height: u16 = u16(data & 0xFFF);
-  SCRW = width;
-  SCRH = height;
-};
+let SCRW: i32 = 0;
+let SCRH: i32 = 0;
 
 export function vinit(): void {
-  const stime: i32 = cpu_ticks_ms()
-  updateScreenSize();
+  const stime: i32 = cpu_ticks_ms();
+  screen_init();
+  SCRW = get_screen_width();
+  SCRH = get_screen_height();
   console.log(`Screen Width: ${SCRW}`);
   console.log(`Screen Height: ${SCRH}`);
   let i = 0;
   while (i < 999999) {
     i++;
   }
-  const etime: i32 = cpu_ticks_ms()
+  fill_screen(1);
+  const etime: i32 = cpu_ticks_ms();
   console.log(`number: ${i}`);
   console.log(`inited. CPU time: ${ticks_diff(etime, stime)} ms`);
 }
 
 export function vloop(): void {
   // console.log("vloop");
+  // console.log("filling screen...");
+  // abort();
 }

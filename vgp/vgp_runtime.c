@@ -17,9 +17,7 @@ static int32_t vgp_get_feature(int32_t feature_id) {
 
 static int32_t vgp_call0(int32_t function_id) {
     #if (VGP_DEBUG > 0)
-    if (function_id != VFUNC_TRACE_PUT_CHAR) {
-        DEBUG_PRINTF("call0 |0x%06X|", function_id);
-    }
+    DEBUG_PRINTF("call0 |0x%06X|", function_id);
     #endif
     switch (function_id) {
         case VFUNC_CPU_TICKS_MS:
@@ -50,6 +48,9 @@ static int32_t vgp_call1(int32_t function_id, int32_t p1) {
 }
 
 static int32_t vgp_call2(int32_t function_id, int32_t p1, int32_t p2) {
+    #if (VGP_DEBUG > 0)
+    DEBUG_PRINTF("call2 |0x%06X| %d %d", function_id, p1, p2);
+    #endif
     switch (function_id) {
         // case VFUNC_TRACE_PUT_CHAR:
         //     vgp_trace_put_char(p1);
@@ -61,6 +62,11 @@ static int32_t vgp_call2(int32_t function_id, int32_t p1, int32_t p2) {
 }
 
 static int32_t vgp_call3(int32_t function_id, int32_t p1, int32_t p2, int32_t p3) {
+    #if (VGP_DEBUG > 0)
+    if (function_id != VFUNC_SCREEN_PIXEL) {
+        DEBUG_PRINTF("call3 |0x%06X| %d %d %d", function_id, p1, p2, p3);
+    }
+    #endif
     switch (function_id) {
         case VFUNC_SCREEN_PIXEL:
             vgp_screen_pixel(p1, p2, p3);
@@ -72,6 +78,9 @@ static int32_t vgp_call3(int32_t function_id, int32_t p1, int32_t p2, int32_t p3
 }
 
 static int32_t vgp_call4(int32_t function_id, int32_t p1, int32_t p2, int32_t p3, int32_t p4) {
+    #if (VGP_DEBUG > 0)
+    DEBUG_PRINTF("call4 |0x%06X| %d %d %d %d", function_id, p1, p2, p3, p4);
+    #endif
     switch (function_id) {
         // case VFUNC_TRACE_PUT_CHAR:
         //     vgp_trace_put_char(p1);
@@ -116,10 +125,10 @@ m3ApiRawFunction(__call2) {
 
 m3ApiRawFunction(__call3) {
     m3ApiReturnType(int32_t);
+    m3ApiGetArg(int32_t, function_id);
     m3ApiGetArg(int32_t, p1);
     m3ApiGetArg(int32_t, p2);
     m3ApiGetArg(int32_t, p3);
-    m3ApiGetArg(int32_t, function_id);
     int32_t value = vgp_call3(function_id, p1, p2, p3);
     m3ApiReturn(value);
 }

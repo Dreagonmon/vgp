@@ -14,6 +14,7 @@ else
 CFLAGS += -Os
 endif
 CFLAGS += -std=gnu17 -Wall
+CFLAGS += ${shell pkg-config --libs --cflags sdl2}
 # library
 CFLAGS += -lm
 # include header
