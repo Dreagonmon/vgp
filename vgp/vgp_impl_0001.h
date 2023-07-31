@@ -1,8 +1,8 @@
 /**
  * Features Must Have
 */
-#ifndef vgp_impl_0000_h
-#define vgp_impl_0000_h
+#ifndef vgp_impl_0001_h
+#define vgp_impl_0001_h
 
 #include <stdint.h>
 
@@ -16,4 +16,4 @@ int32_t vgp_cpu_ticks_ms(void);
 void vgp_trace_put_char(int32_t ascii_byte);
 void vgp_system_exit(void);
 
-#endif // vgp_impl_0000_h
+#endif // vgp_impl_0001_h

@@ -1,6 +1,8 @@
+#include <stdbool.h>
 #include <vgp_runtime.h>
 #include <vgp_error.h>
 #include <vgp_impl_0001.h>
+#include <vgp_impl_0002.h>
 
 // Runtime API Implements
 static int32_t vgp_get_feature(int32_t feature_id) {
@@ -9,6 +11,10 @@ static int32_t vgp_get_feature(int32_t feature_id) {
             return vgp_screen_get_size();
         case VFEATURE_SCREEN_COLOR_FORMAT:
             return vgp_screen_get_color_format();
+        #if (VGP_FEATURE_GAMEPAD > 0)
+        case VFEATURE_GAMEPAD_SUPPORT:
+            return 1;
+        #endif
         default:
             break;
     }
@@ -17,7 +23,14 @@ static int32_t vgp_get_feature(int32_t feature_id) {
 
 static int32_t vgp_call0(int32_t function_id) {
     #if (VGP_DEBUG > 0)
-    DEBUG_PRINTF("call0 |0x%06X|", function_id);
+    if (
+        function_id != VFUNC_CPU_TICKS_MS
+        #if (VGP_FEATURE_GAMEPAD > 0)
+        && function_id != VFUNC_GAMEPAD_STATUS
+        #endif
+    ) {
+        DEBUG_PRINTF("call0 |0x%06X|", function_id);
+    }
     #endif
     switch (function_id) {
         case VFUNC_CPU_TICKS_MS:
@@ -25,6 +38,10 @@ static int32_t vgp_call0(int32_t function_id) {
         case VFUNC_SYSTEM_EXIT:
             vgp_system_exit();
             return 0;
+        #if (VGP_FEATURE_GAMEPAD > 0)
+        case VFUNC_GAMEPAD_STATUS:
+            return vgp_gamepad_status();
+        #endif
         default:
             break;
     }
@@ -152,23 +169,23 @@ M3Result __vgp_link_runtime(IM3Module module) {
     #endif
     result = m3_LinkRawFunction(module, "env", "call0", "i(i)", __call0);
     #if (VGP_DEBUG > 0)
-    if (result) DEBUG_PRINTF("call0: %s", result);
+    if (result) DEBUG_PRINTF("link function call0: %s", result);
     #endif
     result = m3_LinkRawFunction(module, "env", "call1", "i(ii)", __call1);
     #if (VGP_DEBUG > 0)
-    if (result) DEBUG_PRINTF("call1: %s", result);
+    if (result) DEBUG_PRINTF("link function call1: %s", result);
     #endif
     result = m3_LinkRawFunction(module, "env", "call2", "i(iii)", __call2);
     #if (VGP_DEBUG > 0)
-    if (result) DEBUG_PRINTF("call2: %s", result);
+    if (result) DEBUG_PRINTF("link function call2: %s", result);
     #endif
     result = m3_LinkRawFunction(module, "env", "call3", "i(iiii)", __call3);
     #if (VGP_DEBUG > 0)
-    if (result) DEBUG_PRINTF("call3: %s", result);
+    if (result) DEBUG_PRINTF("link function call3: %s", result);
     #endif
     result = m3_LinkRawFunction(module, "env", "call4", "i(iiiii)", __call4);
     #if (VGP_DEBUG > 0)
-    if (result) DEBUG_PRINTF("call4: %s", result);
+    if (result) DEBUG_PRINTF("link function call4: %s", result);
     #endif
     return m3Err_none;
 }

@@ -1,5 +1,5 @@
 import {
-    getFeature,
+    get_feature,
     VFEATURE_SCREEN_SIZE,
     VFEATURE_SCREEN_COLOR_FORMAT,
     VCOLOR_FORMAT_BW,
@@ -112,12 +112,12 @@ let WHITE: i32 = 0xFFFFFF;
 const BLACK: i32 = 0;
 
 export const screen_init = (): void => {
-    const data: i32 = getFeature(VFEATURE_SCREEN_SIZE);
+    const data: i32 = get_feature(VFEATURE_SCREEN_SIZE);
     const width: i32 = (data >> 12) & 0xFFF;
     const height: i32 = data & 0xFFF;
     SCRW = width;
     SCRH = height;
-    const fmt: i32 = getFeature(VFEATURE_SCREEN_COLOR_FORMAT);
+    const fmt: i32 = get_feature(VFEATURE_SCREEN_COLOR_FORMAT);
     if (fmt === VCOLOR_FORMAT_BW) {
         WHITE = 1;
     } else if (fmt === VCOLOR_FORMAT_RGB888) {
@@ -148,7 +148,7 @@ export const draw_char_8x8 = (chr: i32, x0: i32, y0: i32, color: i32): void => {
     // loop over char data
     for (let j: i32 = 0; j < 8; j++) {
         if (0 <= x0 && x0 < SCRW) { // clip x
-            let vline_data: u8 = FONT_PETME128_8X8[chr_data_offset + j]; // each byte is a column of 8 pixels, LSB at top
+            let vline_data: u8 = FONT_PETME128_8X8[ chr_data_offset + j ]; // each byte is a column of 8 pixels, LSB at top
             for (let y: i32 = y0; vline_data > 0; y++) { // scan over vertical column
                 if (vline_data & 1) { // only draw if pixel set
                     if (0 <= y && y < SCRH) { // clip y
@@ -160,7 +160,7 @@ export const draw_char_8x8 = (chr: i32, x0: i32, y0: i32, color: i32): void => {
         }
         x0++;
     }
-}
+};
 
 export const draw_text_8x8 = (text: string, x: i32, y: i32, color: i32): void => {
     for (let p: i32 = 0; p < text.length; p++) {
@@ -169,16 +169,16 @@ export const draw_text_8x8 = (text: string, x: i32, y: i32, color: i32): void =>
     }
 };
 
-export const draw_center_text = (text: string, areaX: i32, areaY: i32,areaW: i32, areaH: i32, color: i32): void => {
+export const draw_center_text = (text: string, areaX: i32, areaY: i32, areaW: i32, areaH: i32, color: i32): void => {
     const lines = text.split("\n");
     let offy: i32 = (areaH - (lines.length * 8)) / 2 + areaY;
     for (let l: i32 = 0; l < lines.length; l++) {
-        const line = lines[l].trim();
+        const line = lines[ l ].trim();
         const offx = (areaW - (line.length * 8)) / 2 + areaX;
         draw_text_8x8(line, offx, offy, color);
         offy += 8;
     }
-}
+};
 
 export const full_screen_text = (text: string): void => {
     fill_screen(BLACK);

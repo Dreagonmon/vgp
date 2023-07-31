@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <vgp_config.h>
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -10,7 +11,9 @@
 void __hw_init(void);
 void __hw_draw_pixel(int32_t x, int32_t y, int32_t color);
 int32_t __hw_ticks_ms(void);
+#if (VGP_FEATURE_GAMEPAD > 0)
 int32_t __hw_get_gamepad_status(void);
+#endif
 void __hw_task_each_frame(void);
 void __hw_notify_quit(void);
 bool __hw_should_quit(void);

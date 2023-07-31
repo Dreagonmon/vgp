@@ -1,13 +1,8 @@
 #include <hw.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
+#include <vgp_impl_0002.h>
 
-#define KEY_MASK_UP    (0b1 << 5)
-#define KEY_MASK_DOWN  (0b1 << 4)
-#define KEY_MASK_LEFT  (0b1 << 3)
-#define KEY_MASK_RIGHT (0b1 << 2)
-#define KEY_MASK_A     (0b1 << 1)
-#define KEY_MASK_B     (0b1 << 0)
 #define WINDOW_SCALE 8
 #define WINDOW_W (SCREEN_WIDTH * WINDOW_SCALE)
 #define WINDOW_H (SCREEN_HEIGHT * WINDOW_SCALE)
@@ -79,25 +74,32 @@ int32_t __hw_ticks_ms(void) {
     return SDL_GetTicks() & INT32_MAX;
 }
 
+#if (VGP_FEATURE_GAMEPAD > 0)
 int32_t __hw_get_gamepad_status(void) {
     int ksize = 0;
-    const int32_t *kbd = SDL_GetKeyboardState(&ksize);
+    const uint8_t *kbd = SDL_GetKeyboardState(&ksize);
     int32_t value = 0;
     if (kbd[SDL_SCANCODE_K]) {
         value |= KEY_MASK_A;
-    } else if (kbd[SDL_SCANCODE_J]) {
+    }
+    if (kbd[SDL_SCANCODE_J]) {
         value |= KEY_MASK_B;
-    } else if (kbd[SDL_SCANCODE_W]) {
+    }
+    if (kbd[SDL_SCANCODE_W]) {
         value |= KEY_MASK_UP;
-    } else if (kbd[SDL_SCANCODE_S]) {
+    }
+    if (kbd[SDL_SCANCODE_S]) {
         value |= KEY_MASK_DOWN;
-    } else if (kbd[SDL_SCANCODE_A]) {
+    }
+    if (kbd[SDL_SCANCODE_A]) {
         value |= KEY_MASK_LEFT;
-    } else if (kbd[SDL_SCANCODE_D]) {
+    }
+    if (kbd[SDL_SCANCODE_D]) {
         value |= KEY_MASK_RIGHT;
     }
     return value;
 }
+#endif
 
 void __hw_task_each_frame(void) {
     poll_sdl_events();

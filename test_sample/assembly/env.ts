@@ -1,6 +1,6 @@
 
 @external("env", "get_feature")
-export declare function getFeature(featureId: i32): i32;
+export declare function get_feature(featureId: i32): i32;
 
 @external("env", "call0")
 export declare function call0(func: i32): i32;
@@ -35,6 +35,8 @@ export const VFUNC_RTC_GET_OFFSET: i32 = 0x000400;
 export const VFUNC_RTC_SET_OFFSET: i32 = 0x000401;
 export const VFUNC_RTC_GET_TIME: i32 = 0x000402;
 export const VFUNC_RTC_SET_TIME: i32 = 0x000403;
+
+/* ======== Feature Must Have ======== */
 
 export const VCOLOR_FORMAT_BW: i32 = 1;
 export const VCOLOR_FORMAT_RGB888: i32 = 2;
@@ -99,3 +101,9 @@ class Console {
 }
 
 export const console = new Console();
+
+/* ======== Feature Gamepad ======== */
+
+export const gamepad_status = (): i32 => {
+    return call0(VFUNC_GAMEPAD_STATUS);
+};
