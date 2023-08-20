@@ -11,6 +11,8 @@ import {
 } from "./bwscreen.ts";
 import {
   gamepad_available,
+  get_gamepad_event,
+  GP_EVENT_NONE,
 } from "./gamepad.ts";
 
 let SCRW: i32 = 0;
@@ -38,4 +40,10 @@ export function vinit(): void {
 
 export function vloop(): void {
   // full_screen_text("Hello\nDragon~");
+  let event = get_gamepad_event();
+  let event_type = (event >> 16) & 0xFF;
+  let event_value = event & 0xFF;
+  if (event_type != GP_EVENT_NONE) {
+    console.log(`gpevt: ${event_type}, ${event_value}`);
+  }
 }
