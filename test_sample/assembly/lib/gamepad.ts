@@ -1,7 +1,7 @@
 import {
     VFEATURE_GAMEPAD_SUPPORT,
     gamepad_status, get_feature,
-} from "./env.ts";
+} from "./env";
 
 export const KEY_MASK_UP: i32 = (0b1 << 5);
 export const KEY_MASK_DOWN: i32 = (0b1 << 4);
@@ -16,6 +16,7 @@ export const GP_EVENT_RELEASED: i32 = 0x02;
 
 let last_status: i32 = 0;
 
+// @ts-ignore: decorator
 @inline
 const make_event = (evt: i32, key: i32): i32 => {
     return (evt << 16) | (key & 0xFF);

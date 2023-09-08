@@ -4,33 +4,52 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
-#define _SCR_W SCREEN_WIDTH
-#define _SCR_H SCREEN_HEIGHT
-#define _SCR_FMT VCOLOR_FORMAT_BW
-// _MASK only works if _SCR_W and _SCR_H is 2^n
-#define _W_MASK (UINT32_MAX - _SCR_W + 1)
-#define _H_MASK (UINT32_MAX - _SCR_H + 1)
+// _MASK only works if SCREEN_WIDTH and SCREEN_HEIGHT is 2^n
+#define _BORDER_CHECK_OPTIMIZE ( \
+    ( \
+        SCREEN_WIDTH == 32 \
+        || SCREEN_WIDTH == 64 \
+        || SCREEN_WIDTH == 128 \
+        || SCREEN_WIDTH == 256 \
+        || SCREEN_WIDTH == 512 \
+        || SCREEN_WIDTH == 1024 \
+        || SCREEN_WIDTH == 2048 \
+    ) && ( \
+        SCREEN_HEIGHT == 32 \
+        || SCREEN_HEIGHT == 64 \
+        || SCREEN_HEIGHT == 128 \
+        || SCREEN_HEIGHT == 256 \
+        || SCREEN_HEIGHT == 512 \
+        || SCREEN_HEIGHT == 1024 \
+        || SCREEN_HEIGHT == 2048 \
+    ) \
+)
+#define _W_MASK (UINT32_MAX - SCREEN_WIDTH + 1)
+#define _H_MASK (UINT32_MAX - SCREEN_HEIGHT + 1)
 
 int32_t vgp_screen_get_size() {
-    return ((_SCR_W & 0xFFF) << 12) | (_SCR_H & 0xFFF);
+    return ((SCREEN_WIDTH & 0xFFF) << 12) | (SCREEN_HEIGHT & 0xFFF);
 }
 
 int32_t vgp_screen_get_color_format() {
-    return _SCR_FMT;
+    return SCREEN_COLOR_FORMAT;
 }
 
 void vgp_screen_pixel(int32_t x, int32_t y, int32_t c) {
-    // if (x < 0 || x >= _SCR_W || y < 0 || y >= _SCR_H) {
-    //     return;
-    // }
+    #if (_BORDER_CHECK_OPTIMIZE)
     // faster version
-    // _SCR_W - 1  = 127                    = 0b1111111
+    // SCREEN_WIDTH - 1  = 127                    = 0b1111111
     // _W_MASK     = 0b11111111111111111111111110000000
-    // _SCR_H - 1  = 63                      = 0b111111
+    // SCREEN_HEIGHT - 1  = 63                      = 0b111111
     // _H_MASK     = 0b11111111111111111111111111000000
     if ( x & _W_MASK || y & _H_MASK) {
         return;
     }
+    #else
+    if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT) {
+        return;
+    }
+    #endif
     // printf("Screen Pixel: %d, %d | %d\n", x, y, c);
     __hw_draw_pixel(x, y, c);
 }

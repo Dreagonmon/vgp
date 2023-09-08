@@ -5,7 +5,7 @@ import {
     VCOLOR_FORMAT_BW,
     VCOLOR_FORMAT_RGB888,
     screen_pixel,
-} from "./env.ts";
+} from "./env";
 
 const FONT_PETME128_8X8: u8[] = [
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // 32=
@@ -120,9 +120,13 @@ export const screen_init = (): void => {
     const fmt: i32 = get_feature(VFEATURE_SCREEN_COLOR_FORMAT);
     if (fmt === VCOLOR_FORMAT_BW) {
         WHITE = 1;
+        console.log(`Screen Color: BlackWhite`);
     } else if (fmt === VCOLOR_FORMAT_RGB888) {
         WHITE = 0xFFFFFF;
+        console.log(`Screen Width: RGB888`);
     }
+    console.log(`Screen Width: ${SCRW}`);
+    console.log(`Screen Height: ${SCRH}`);
 };
 
 export const get_screen_width = (): i32 => SCRW;

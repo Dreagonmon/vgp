@@ -38,6 +38,6 @@ int main() {
     // deinit
     vgp_destory();
     free(wasm);
-    __hw_quit();
+    __hw_do_quit();
     return 0;
 }

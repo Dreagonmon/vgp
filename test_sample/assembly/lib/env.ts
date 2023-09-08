@@ -1,19 +1,25 @@
 
+// @ts-ignore: decorator
 @external("env", "get_feature")
 export declare function get_feature(featureId: i32): i32;
 
+// @ts-ignore: decorator
 @external("env", "call0")
 export declare function call0(func: i32): i32;
 
+// @ts-ignore: decorator
 @external("env", "call1")
 export declare function call1(func: i32, p1: i32): i32;
 
+// @ts-ignore: decorator
 @external("env", "call2")
 export declare function call2(func: i32, p1: i32, p2: i32): i32;
 
+// @ts-ignore: decorator
 @external("env", "call3")
 export declare function call3(func: i32, p1: i32, p2: i32, p3: i32): i32;
 
+// @ts-ignore: decorator
 @external("env", "call4")
 export declare function call4(func: i32, p1: i32, p2: i32, p3: i32, p4: i32): i32;
 
@@ -87,16 +93,16 @@ class Console {
         trace_put_string("\n");
     }
     debug(message: string = ""): void {
-        this.log(message);
+        this.log("[Debug] " + message);
     }
     info(message: string = ""): void {
-        this.log(message);
+        this.log("[Info] " + message);
     }
     warn(message: string = ""): void {
-        this.log(message);
+        this.log("[Warning] " + message);
     }
     error(message: string = ""): void {
-        this.log(message);
+        this.log("[Error] " + message);
     }
 }
 
