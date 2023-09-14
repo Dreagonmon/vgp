@@ -133,14 +133,26 @@ export const get_screen_width = (): i32 => SCRW;
 
 export const get_screen_height = (): i32 => SCRH;
 
-export const fill_screen = (color: i32): void => {
+export const pixel = (areaX: i32, areaY: i32, color: i32): void => {
     const c: i32 = color > 0 ? WHITE : BLACK;
-    for (let x: i32 = 0; x < SCRW; x++) {
-        for (let y: i32 = 0; y < SCRH; y++) {
+    screen_pixel(areaX, areaY, c);
+};
+
+export const fill_rect = (areaX: i32, areaY: i32, areaW: i32, areaH: i32, color: i32): void => {
+    const c: i32 = color > 0 ? WHITE : BLACK;
+    const endX = areaX + areaW;
+    const endY = areaY + areaH;
+    for (let x: i32 = areaX; x < endX; x++) {
+        for (let y: i32 = areaY; y < endY; y++) {
             screen_pixel(x, y, c);
         }
     }
 };
+
+export const fill_screen = (color: i32): void => {
+    fill_rect(0, 0, SCRW, SCRH, color);
+};
+
 
 export const draw_char_8x8 = (chr: i32, x0: i32, y0: i32, color: i32): void => {
     const c: i32 = color > 0 ? WHITE : BLACK;

@@ -3,7 +3,8 @@ import {
     ticks_diff,
 } from "../lib/env";
 import { full_screen_text } from "../lib/bwscreen";
-import { UIContext, popUI } from "./context";
+import { UIContext, popUI, pushUI } from "./context";
+import { UIMainMenu } from "./main_menu";
 
 export class UISlashScreen extends UIContext {
     startTime: i32 = 0;
@@ -19,8 +20,9 @@ export class UISlashScreen extends UIContext {
 
     loop(): void {
         const now: i32 = cpu_ticks_ms();
-        if (ticks_diff(now, this.startTime) > 2000) {
+        if (ticks_diff(now, this.startTime) > 1000) {
             popUI();
+            pushUI(new UIMainMenu());
         }
     }
 }

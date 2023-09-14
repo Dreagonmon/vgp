@@ -95,21 +95,21 @@
 
 真实时间计算公式为: 时间 = ((offset & 0x7FFFFF) << 31) | (rtc & 0x7FFFFF)
 
-* int32 rtc_get_offset()
+* int32 rtc_get_h31()
 
-  获取RTC偏移量，用来解决y2038问题
+  获取RTC的秒数高31位，符号位忽略
 
-* void rtc_set_offset()
+* void rtc_set_h31()
 
-  设置RTC偏移量，用来解决y2038问题
+  设置RTC的秒数高31位，符号位忽略
 
-* int32 rtc_get_time()
+* int32 rtc_get_l31()
 
-  获取RTC的秒数
+  获取RTC的秒数低31位，符号位忽略
 
-* void rtc_set_time(int32 value)
+* void rtc_set_l31(int32 value)
 
-  设置RTC的秒数
+  设置RTC的秒数低31位，符号位忽略
 
 # VGP 方法列表
 | feature set | function id | function name |
@@ -125,10 +125,10 @@
 | 0x0003 | 0x000301 | save_flush |
 | 0x0003 | 0x000302 | save_read |
 | ------ | -------- | -------- |
-| 0x0004 | 0x000400 | rtc_get_offset |
-| 0x0004 | 0x000401 | rtc_set_offset |
-| 0x0004 | 0x000402 | rtc_get_time |
-| 0x0004 | 0x000403 | rtc_set_time |
+| 0x0004 | 0x000400 | rtc_get_h31 |
+| 0x0004 | 0x000401 | rtc_set_h31 |
+| 0x0004 | 0x000402 | rtc_get_l31 |
+| 0x0004 | 0x000403 | rtc_set_l31 |
 
 # 参考资料
 
