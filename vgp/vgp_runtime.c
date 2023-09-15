@@ -3,6 +3,7 @@
 #include <vgp_error.h>
 #include <vgp_impl_0001.h>
 #include <vgp_impl_0002.h>
+#include <vgp_impl_0003.h>
 
 // Runtime API Implements
 static int32_t vgp_get_feature(int32_t feature_id) {
@@ -15,6 +16,10 @@ static int32_t vgp_get_feature(int32_t feature_id) {
         case VFEATURE_GAMEPAD_SUPPORT:
             return 1;
         #endif
+        #if (VGP_FEATURE_SAVE > 0)
+        case VFEATURE_SAVE_SIZE:
+            return save_get_capacity();
+        #endif
         default:
             break;
     }
@@ -25,8 +30,12 @@ static int32_t vgp_call0(int32_t function_id) {
     #if (VGP_DEBUG > 0)
     if (
         function_id != VFUNC_CPU_TICKS_MS
+        && function_id != VFUNC_SYSTEM_EXIT
         #if (VGP_FEATURE_GAMEPAD > 0)
         && function_id != VFUNC_GAMEPAD_STATUS
+        #endif
+        #if (VGP_FEATURE_SAVE > 0)
+        && function_id != VFUNC_SAVE_FLUSH
         #endif
     ) {
         DEBUG_PRINTF("call0 |0x%06X|", function_id);
@@ -42,6 +51,11 @@ static int32_t vgp_call0(int32_t function_id) {
         case VFUNC_GAMEPAD_STATUS:
             return vgp_gamepad_status();
         #endif
+        #if (VGP_FEATURE_SAVE > 0)
+        case VFUNC_SAVE_FLUSH:
+            save_flush();
+            return 0;
+        #endif
         default:
             break;
     }
@@ -50,7 +64,12 @@ static int32_t vgp_call0(int32_t function_id) {
 
 static int32_t vgp_call1(int32_t function_id, int32_t p1) {
     #if (VGP_DEBUG > 0)
-    if (function_id != VFUNC_TRACE_PUT_CHAR) {
+    if (
+        function_id != VFUNC_TRACE_PUT_CHAR
+        #if (VGP_FEATURE_SAVE > 0)
+        && function_id != VFUNC_SAVE_READ
+        #endif
+    ) {
         DEBUG_PRINTF("call1 |0x%06X|: %d", function_id, p1);
     }
     #endif
@@ -58,6 +77,10 @@ static int32_t vgp_call1(int32_t function_id, int32_t p1) {
         case VFUNC_TRACE_PUT_CHAR:
             vgp_trace_put_char(p1);
             return 0;
+        #if (VGP_FEATURE_SAVE > 0)
+        case VFUNC_SAVE_READ:
+            return save_read(p1);
+        #endif
         default:
             break;
     }
@@ -66,12 +89,21 @@ static int32_t vgp_call1(int32_t function_id, int32_t p1) {
 
 static int32_t vgp_call2(int32_t function_id, int32_t p1, int32_t p2) {
     #if (VGP_DEBUG > 0)
-    DEBUG_PRINTF("call2 |0x%06X| %d %d", function_id, p1, p2);
+    if (
+        true
+        #if (VGP_FEATURE_SAVE > 0)
+        && function_id != VFUNC_SAVE_WRITE
+        #endif
+    ) {
+        DEBUG_PRINTF("call2 |0x%06X| %d %d", function_id, p1, p2);
+    }
     #endif
     switch (function_id) {
-        // case VFUNC_TRACE_PUT_CHAR:
-        //     vgp_trace_put_char(p1);
-        //     return 0;
+        #if (VGP_FEATURE_SAVE > 0)
+        case VFUNC_SAVE_WRITE:
+            save_write(p1, p2);
+            return 0;
+        #endif
         default:
             break;
     }
@@ -164,28 +196,16 @@ m3ApiRawFunction(__call4) {
 M3Result __vgp_link_runtime(IM3Module module) {
     M3Result result = m3Err_none;
     result = m3_LinkRawFunction(module, "env", "get_feature", "i(i)", __get_feature);
-    #if (VGP_DEBUG > 0)
     if (result) DEBUG_PRINTF("get_feature: %s", result);
-    #endif
     result = m3_LinkRawFunction(module, "env", "call0", "i(i)", __call0);
-    #if (VGP_DEBUG > 0)
     if (result) DEBUG_PRINTF("link function call0: %s", result);
-    #endif
     result = m3_LinkRawFunction(module, "env", "call1", "i(ii)", __call1);
-    #if (VGP_DEBUG > 0)
     if (result) DEBUG_PRINTF("link function call1: %s", result);
-    #endif
     result = m3_LinkRawFunction(module, "env", "call2", "i(iii)", __call2);
-    #if (VGP_DEBUG > 0)
     if (result) DEBUG_PRINTF("link function call2: %s", result);
-    #endif
     result = m3_LinkRawFunction(module, "env", "call3", "i(iiii)", __call3);
-    #if (VGP_DEBUG > 0)
     if (result) DEBUG_PRINTF("link function call3: %s", result);
-    #endif
     result = m3_LinkRawFunction(module, "env", "call4", "i(iiiii)", __call4);
-    #if (VGP_DEBUG > 0)
     if (result) DEBUG_PRINTF("link function call4: %s", result);
-    #endif
     return m3Err_none;
 }

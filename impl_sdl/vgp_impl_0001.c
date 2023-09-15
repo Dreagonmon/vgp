@@ -50,7 +50,7 @@ void vgp_screen_pixel(int32_t x, int32_t y, int32_t c) {
         return;
     }
     #endif
-    // printf("Screen Pixel: %d, %d | %d\n", x, y, c);
+    // DEBUG_PRINTF("Screen Pixel: %d, %d | %d\n", x, y, c);
     __hw_draw_pixel(x, y, c);
 }
 
@@ -60,10 +60,10 @@ int32_t vgp_cpu_ticks_ms(void) {
 
 void vgp_trace_put_char(int32_t ascii_byte) {
     if (ascii_byte < 0 || ascii_byte >= 0x7F) {
-        // printf("?");
+        // DEBUG_PRINTF("?");
         putchar(0x3F);
     } else {
-        // printf("%c", ascii_byte & 0x7F);
+        // DEBUG_PRINTF("%c", ascii_byte & 0x7F);
         putchar(ascii_byte & 0x7F);
     }
 }

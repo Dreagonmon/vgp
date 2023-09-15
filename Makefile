@@ -48,4 +48,4 @@ clean:
 run: $(TARGET)
 	@chmod +x $(TARGET)
 	@echo ================================
-	@$(TARGET)
+	@$(TARGET) test_sample/build/debug.wasm

@@ -21,6 +21,7 @@
 #define KEY_SCAN_CODE_LEFT SDL_SCANCODE_A
 #define KEY_SCAN_CODE_RIGHT SDL_SCANCODE_D
 #endif // (VGP_FEATURE_GAMEPAD > 0)
+#define SAVE_CAPACITY (8 * 1024)
 
 #if (SCREEN_WIDTH > 0xFFF)
     #error Screen width must less than 4096
@@ -39,5 +40,8 @@ void __hw_task_each_frame(void);
 void __hw_notify_quit(void);
 bool __hw_should_quit(void);
 void __hw_do_quit(void);
+void *__hw_load_wasm(const char *wasm_path, size_t *data_size);
+uint8_t *__hw_get_save_buffer();
+void __hw_commit_save_buffer();
 
 #endif // hardware_h
