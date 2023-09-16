@@ -8,7 +8,7 @@
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        DEBUG_PRINTF("Expect a path to the wasm file.\n");
+        DEBUG_PRINTF("Expect a path to the wasm file.");
         return 1;
     }
     char *wasm_path = argv[1];
@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     size_t wasm_len = 0;
     uint8_t *wasm = __hw_load_wasm(wasm_path, &wasm_len);
     if (wasm == NULL) {
-        DEBUG_PRINTF("Failed to open wasm file: %s\n", wasm_path);
+        DEBUG_PRINTF("Failed to open wasm file: %s", wasm_path);
         return 1;
     }
     // uint8_t *wasm = malloc(65536);
@@ -27,19 +27,19 @@ int main(int argc, char *argv[]) {
     __hw_init();
     bool successed = vgp_init(wasm, wasm_len);
     if (!successed) {
-        DEBUG_PRINTF("init: %s\n", vgp_get_last_error());
+        DEBUG_PRINTF("init: %s", vgp_get_last_error());
     }
     // loop
     while (successed) {
         successed = vgp_loop_once();
         __hw_task_each_frame();
         if (__hw_should_quit()) {
-            DEBUG_PRINTF("System Quit.\n");
+            DEBUG_PRINTF("System Quit.");
             break;
         }
     }
     if (!successed) {
-        DEBUG_PRINTF("loop: %s\n", vgp_get_last_error());
+        DEBUG_PRINTF("loop: %s", vgp_get_last_error());
     }
     // deinit
     vgp_destory();

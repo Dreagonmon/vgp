@@ -6,6 +6,7 @@ import { full_screen_text } from "../lib/bwscreen";
 import { cpu_ticks_ms, ticks_diff } from "../lib/env";
 import { UIListMenu } from "./list_menu";
 import { UITestGamepad } from "./test_gamepad";
+import { UITestSave } from "./test_save";
 import { UIContext, pushUI, popUI } from "./context";
 
 export class UIMainMenu extends UIContext {
@@ -49,7 +50,7 @@ export class UIMainMenu extends UIContext {
             } else if (item === "Gamepad") {
                 pushUI(new UITestGamepad());
             } else if (item === "Save") {
-                //
+                pushUI(new UITestSave());
             } else if (item === "RTC") {
                 //
             }

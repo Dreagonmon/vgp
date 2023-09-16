@@ -21,7 +21,9 @@
 #define KEY_SCAN_CODE_LEFT SDL_SCANCODE_A
 #define KEY_SCAN_CODE_RIGHT SDL_SCANCODE_D
 #endif // (VGP_FEATURE_GAMEPAD > 0)
+#if (VGP_FEATURE_SAVE > 0)
 #define SAVE_CAPACITY (8 * 1024)
+#endif // (VGP_FEATURE_SAVE > 0)
 
 #if (SCREEN_WIDTH > 0xFFF)
     #error Screen width must less than 4096
@@ -33,15 +35,17 @@
 void __hw_init(void);
 void __hw_draw_pixel(int32_t x, int32_t y, int32_t color);
 int32_t __hw_ticks_ms(void);
-#if (VGP_FEATURE_GAMEPAD > 0)
-int32_t __hw_get_gamepad_status(void);
-#endif // (VGP_FEATURE_GAMEPAD > 0)
 void __hw_task_each_frame(void);
 void __hw_notify_quit(void);
 bool __hw_should_quit(void);
 void __hw_do_quit(void);
 void *__hw_load_wasm(const char *wasm_path, size_t *data_size);
+#if (VGP_FEATURE_GAMEPAD > 0)
+int32_t __hw_get_gamepad_status(void);
+#endif // (VGP_FEATURE_GAMEPAD > 0)
+#if (VGP_FEATURE_SAVE > 0)
 uint8_t *__hw_get_save_buffer();
 void __hw_commit_save_buffer();
+#endif // (VGP_FEATURE_SAVE > 0)
 
 #endif // hardware_h

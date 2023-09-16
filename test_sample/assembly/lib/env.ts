@@ -26,7 +26,7 @@ export declare function call4(func: i32, p1: i32, p2: i32, p3: i32, p4: i32): i3
 export const VFEATURE_SCREEN_SIZE: i32 = 0x0000;
 export const VFEATURE_SCREEN_COLOR_FORMAT: i32 = 0x0001;
 export const VFEATURE_GAMEPAD_SUPPORT: i32 = 0x0002;
-export const VFEATURE_SAVE_SIZE: i32 = 0x0003;
+export const VFEATURE_SAVE_CAPACITY: i32 = 0x0003;
 export const VFEATURE_RTC_SUPPORT: i32 = 0x0004;
 
 export const VFUNC_SCREEN_PIXEL: i32 = 0x000100;
@@ -113,3 +113,16 @@ export const console = new Console();
 export const gamepad_status = (): i32 => {
     return call0(VFUNC_GAMEPAD_STATUS);
 };
+
+/* ======== Feature Save ======== */
+export const save_write = (offset: i32, value: i32): void => {
+    call2(VFUNC_SAVE_WRITE, offset, value);
+};
+
+export const save_flush = (): void => {
+    call0(VFUNC_SAVE_FLUSH);
+}
+
+export const save_read = (offset: i32): i32 => {
+    return call1(VFUNC_SAVE_READ, offset);
+}

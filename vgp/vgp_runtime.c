@@ -17,7 +17,7 @@ static int32_t vgp_get_feature(int32_t feature_id) {
             return 1;
         #endif
         #if (VGP_FEATURE_SAVE > 0)
-        case VFEATURE_SAVE_SIZE:
+        case VFEATURE_SAVE_CAPACITY:
             return save_get_capacity();
         #endif
         default:

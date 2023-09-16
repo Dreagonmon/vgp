@@ -16,21 +16,21 @@ static bool should_quit = false;
 static char *save_file_name = NULL;
 static uint8_t *save_data = NULL;
 
+static void sdl_print_error() {
+    DEBUG_PRINTF("SDL Error: %s", SDL_GetError());
+    exit(1);
+}
+
 static void sdl_check_code(int x) {
     if ((x) < 0) {
-        DEBUG_PRINTF("SDL Error: %s\n", SDL_GetError());
-        exit(1);
+        sdl_print_error();
     }
 }
+
 static void sdl_check_not_null(void *x) {
     if ((x) == NULL) {
-        DEBUG_PRINTF("SDL Error: %s\n", SDL_GetError());
-        exit(1);
+        sdl_print_error();
     }
-}
-static void sdl_print_error() {
-    DEBUG_PRINTF("SDL Error: %s\n", SDL_GetError());
-    exit(1);
 }
 
 
@@ -177,6 +177,7 @@ void *__hw_load_wasm(const char *wasm_path, size_t *data_size) {
     return data;
 }
 
+#if (VGP_FEATURE_SAVE > 0)
 uint8_t *__hw_get_save_buffer() {
     if (save_data == NULL) {
         if (save_file_name != NULL) {
@@ -184,14 +185,14 @@ uint8_t *__hw_get_save_buffer() {
             if (prop == NULL) {
                 save_data = malloc(sizeof(uint8_t) * SAVE_CAPACITY);
                 memset(save_data, '\0', SAVE_CAPACITY);
-                DEBUG_PRINTF("Failed to open save file: %s\n", save_file_name);
+                DEBUG_PRINTF("Failed to open save file: %s", save_file_name);
             } else {
                 size_t data_size;
                 void *data = SDL_LoadFile_RW(prop, &data_size, true);
                 if (data == NULL) {
                     save_data = malloc(sizeof(uint8_t) * SAVE_CAPACITY);
                     memset(save_data, '\0', SAVE_CAPACITY);
-                    DEBUG_PRINTF("Failed to read save file: %s\n", save_file_name);
+                    DEBUG_PRINTF("Failed to read save file: %s", save_file_name);
                 } else {
                     save_data = malloc(sizeof(uint8_t) * SAVE_CAPACITY);
                     size_t copy_size = data_size > SAVE_CAPACITY ? SAVE_CAPACITY : data_size;
@@ -214,15 +215,16 @@ void __hw_commit_save_buffer() {
     } else {
         SDL_RWops *prop = SDL_RWFromFile(save_file_name, "wb");
         if (prop == NULL) {
-            DEBUG_PRINTF("Failed to open save file: %s\n", save_file_name);
+            DEBUG_PRINTF("Failed to open save file: %s", save_file_name);
             sdl_print_error();
         } else {
             size_t write_size = SDL_RWwrite(prop, save_data, 1, SAVE_CAPACITY);
             SDL_RWclose(prop);
             if (write_size != SAVE_CAPACITY) {
-                DEBUG_PRINTF("Failed to write save file: %s\n", save_file_name);
+                DEBUG_PRINTF("Failed to write save file: %s", save_file_name);
                 sdl_print_error();
             }
         }
     }
 }
+#endif
