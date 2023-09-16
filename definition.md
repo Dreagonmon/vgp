@@ -93,23 +93,23 @@
 
 ### Feature Real Time Clock 0x0004
 
-真实时间计算公式为: 时间 = ((offset & 0x7FFFFF) << 31) | (rtc & 0x7FFFFF)
+真实时间计算公式为: 时间 = ((offset & 0x7FFFFF) << 32) | (rtc & 0xFFFFFF)
 
-* int32 rtc_get_h31()
+* int32 rtc_get_h32()
 
-  获取RTC的秒数高31位，符号位忽略
+  获取RTC的秒数高32位，符号位1则为负
 
-* void rtc_set_h31()
+* void rtc_set_h32(int32 value)
 
-  设置RTC的秒数高31位，符号位忽略
+  设置RTC的秒数高32位，符号位1则为负
 
-* int32 rtc_get_l31()
+* int32 rtc_get_l32()
 
-  获取RTC的秒数低31位，符号位忽略
+  获取RTC的秒数低32位，符号位忽略
 
-* void rtc_set_l31(int32 value)
+* void rtc_set_l32(int32 value)
 
-  设置RTC的秒数低31位，符号位忽略
+  设置RTC的秒数低32位，符号位忽略
 
 # VGP 方法列表
 | feature set | function id | function name |
@@ -125,10 +125,10 @@
 | 0x0003 | 0x000301 | save_flush |
 | 0x0003 | 0x000302 | save_read |
 | ------ | -------- | -------- |
-| 0x0004 | 0x000400 | rtc_get_h31 |
-| 0x0004 | 0x000401 | rtc_set_h31 |
-| 0x0004 | 0x000402 | rtc_get_l31 |
-| 0x0004 | 0x000403 | rtc_set_l31 |
+| 0x0004 | 0x000400 | rtc_get_h32 |
+| 0x0004 | 0x000401 | rtc_set_h32 |
+| 0x0004 | 0x000402 | rtc_get_l32 |
+| 0x0004 | 0x000403 | rtc_set_l32 |
 
 # 参考资料
 

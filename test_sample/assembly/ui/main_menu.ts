@@ -7,6 +7,7 @@ import { cpu_ticks_ms, ticks_diff } from "../lib/env";
 import { UIListMenu } from "./list_menu";
 import { UITestGamepad } from "./test_gamepad";
 import { UITestSave } from "./test_save";
+import { UITestRTC } from "./test_rtc";
 import { UIContext, pushUI, popUI } from "./context";
 
 export class UIMainMenu extends UIContext {
@@ -52,7 +53,7 @@ export class UIMainMenu extends UIContext {
             } else if (item === "Save") {
                 pushUI(new UITestSave());
             } else if (item === "RTC") {
-                //
+                pushUI(new UITestRTC());
             }
         }
     }

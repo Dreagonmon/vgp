@@ -47,5 +47,10 @@ int32_t __hw_get_gamepad_status(void);
 uint8_t *__hw_get_save_buffer();
 void __hw_commit_save_buffer();
 #endif // (VGP_FEATURE_SAVE > 0)
+#if (VGP_FEATURE_RTC > 0)
+uint64_t __hw_get_timestamp(void);
+void __hw_set_timestamp_h32(int32_t value);
+void __hw_set_timestamp_l32(int32_t value);
+#endif
 
 #endif // hardware_h

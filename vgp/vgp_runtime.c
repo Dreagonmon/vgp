@@ -4,6 +4,7 @@
 #include <vgp_impl_0001.h>
 #include <vgp_impl_0002.h>
 #include <vgp_impl_0003.h>
+#include <vgp_impl_0004.h>
 
 // Runtime API Implements
 static int32_t vgp_get_feature(int32_t feature_id) {
@@ -18,6 +19,10 @@ static int32_t vgp_get_feature(int32_t feature_id) {
         #endif
         #if (VGP_FEATURE_SAVE > 0)
         case VFEATURE_SAVE_CAPACITY:
+            return save_get_capacity();
+        #endif
+        #if (VGP_FEATURE_RTC > 0)
+        case VFEATURE_RTC_SUPPORT:
             return save_get_capacity();
         #endif
         default:
@@ -36,6 +41,10 @@ static int32_t vgp_call0(int32_t function_id) {
         #endif
         #if (VGP_FEATURE_SAVE > 0)
         && function_id != VFUNC_SAVE_FLUSH
+        #endif
+        #if (VGP_FEATURE_RTC > 0)
+        && function_id != VFUNC_RTC_GET_H32
+        && function_id != VFUNC_RTC_GET_L32
         #endif
     ) {
         DEBUG_PRINTF("call0 |0x%06X|", function_id);
@@ -56,6 +65,12 @@ static int32_t vgp_call0(int32_t function_id) {
             save_flush();
             return 0;
         #endif
+        #if (VGP_FEATURE_RTC > 0)
+        case VFUNC_RTC_GET_H32:
+            return rtc_get_h32();
+        case VFUNC_RTC_GET_L32:
+            return rtc_get_l32();
+        #endif
         default:
             break;
     }
@@ -69,6 +84,10 @@ static int32_t vgp_call1(int32_t function_id, int32_t p1) {
         #if (VGP_FEATURE_SAVE > 0)
         && function_id != VFUNC_SAVE_READ
         #endif
+        #if (VGP_FEATURE_RTC > 0)
+        && function_id != VFUNC_RTC_SET_H32
+        && function_id != VFUNC_RTC_SET_L32
+        #endif
     ) {
         DEBUG_PRINTF("call1 |0x%06X|: %d", function_id, p1);
     }
@@ -80,6 +99,14 @@ static int32_t vgp_call1(int32_t function_id, int32_t p1) {
         #if (VGP_FEATURE_SAVE > 0)
         case VFUNC_SAVE_READ:
             return save_read(p1);
+        #endif
+        #if (VGP_FEATURE_RTC > 0)
+        case VFUNC_RTC_SET_H32:
+            rtc_set_h32(p1);
+            return 0;
+        case VFUNC_RTC_SET_L32:
+            rtc_set_l32(p1);
+            return 0;
         #endif
         default:
             break;

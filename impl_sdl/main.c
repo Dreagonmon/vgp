@@ -25,10 +25,12 @@ int main(int argc, char *argv[]) {
     // fclose(file);
     // init
     __hw_init();
+    __hw_task_each_frame();
     bool successed = vgp_init(wasm, wasm_len);
     if (!successed) {
         DEBUG_PRINTF("init: %s", vgp_get_last_error());
     }
+    __hw_task_each_frame();
     // loop
     while (successed) {
         successed = vgp_loop_once();

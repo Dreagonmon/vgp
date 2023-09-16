@@ -37,10 +37,10 @@ export const VFUNC_GAMEPAD_STATUS: i32 = 0x000200;
 export const VFUNC_SAVE_WRITE: i32 = 0x000300;
 export const VFUNC_SAVE_FLUSH: i32 = 0x000301;
 export const VFUNC_SAVE_READ: i32 = 0x000302;
-export const VFUNC_RTC_GET_OFFSET: i32 = 0x000400;
-export const VFUNC_RTC_SET_OFFSET: i32 = 0x000401;
-export const VFUNC_RTC_GET_TIME: i32 = 0x000402;
-export const VFUNC_RTC_SET_TIME: i32 = 0x000403;
+export const VFUNC_RTC_GET_H32: i32 = 0x000400;
+export const VFUNC_RTC_SET_H32: i32 = 0x000401;
+export const VFUNC_RTC_GET_L32: i32 = 0x000402;
+export const VFUNC_RTC_SET_L32: i32 = 0x000403;
 
 /* ======== Feature Must Have ======== */
 
@@ -121,8 +121,25 @@ export const save_write = (offset: i32, value: i32): void => {
 
 export const save_flush = (): void => {
     call0(VFUNC_SAVE_FLUSH);
-}
+};
 
 export const save_read = (offset: i32): i32 => {
     return call1(VFUNC_SAVE_READ, offset);
-}
+};
+
+/* ======== Feature RTC ======== */
+export const rtc_get_h32 = (): i32 => {
+    return call0(VFUNC_RTC_GET_H32);
+};
+
+export const rtc_set_h32 = (value: i32): void => {
+    call1(VFUNC_RTC_SET_H32, value);
+};
+
+export const rtc_get_l32 = (): i32 => {
+    return call0(VFUNC_RTC_GET_L32);
+};
+
+export const rtc_set_l32 = (value: i32): void => {
+    call1(VFUNC_RTC_SET_L32, value);
+};

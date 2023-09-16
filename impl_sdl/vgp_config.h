@@ -12,7 +12,7 @@
 #define WASM_STACK_SIZE 4096
 #define VGP_FEATURE_GAMEPAD 1
 #define VGP_FEATURE_SAVE 1
-// #define VGP_FEATURE_RTC 1
+#define VGP_FEATURE_RTC 1
 
 // ==================================
 // ======== Feature Fallback ========
