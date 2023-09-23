@@ -3,6 +3,7 @@
 */
 #ifndef vgp_impl_0002_h
 #define vgp_impl_0002_h
+#include <vgp_config.h>
 
 #if (VGP_FEATURE_GAMEPAD > 0)
 

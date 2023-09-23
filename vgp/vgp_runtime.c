@@ -5,6 +5,7 @@
 #include <vgp_impl_0002.h>
 #include <vgp_impl_0003.h>
 #include <vgp_impl_0004.h>
+#include <vgp.h>
 
 // Runtime API Implements
 static int32_t vgp_get_feature(int32_t feature_id) {
@@ -81,6 +82,7 @@ static int32_t vgp_call1(int32_t function_id, int32_t p1) {
     #if (VGP_DEBUG > 0)
     if (
         function_id != VFUNC_TRACE_PUT_CHAR
+        && function_id != VFUNC_UPDATE_SCREEN_BUFFER
         #if (VGP_FEATURE_SAVE > 0)
         && function_id != VFUNC_SAVE_READ
         #endif
@@ -95,6 +97,9 @@ static int32_t vgp_call1(int32_t function_id, int32_t p1) {
     switch (function_id) {
         case VFUNC_TRACE_PUT_CHAR:
             vgp_trace_put_char(p1);
+            return 0;
+        case VFUNC_UPDATE_SCREEN_BUFFER:
+            vgp_update_screen_buffer(__vpointer_to_real((uint32_t)p1));
             return 0;
         #if (VGP_FEATURE_SAVE > 0)
         case VFUNC_SAVE_READ:
@@ -139,14 +144,8 @@ static int32_t vgp_call2(int32_t function_id, int32_t p1, int32_t p2) {
 
 static int32_t vgp_call3(int32_t function_id, int32_t p1, int32_t p2, int32_t p3) {
     #if (VGP_DEBUG > 0)
-    if (function_id != VFUNC_SCREEN_PIXEL) {
-        DEBUG_PRINTF("call3 |0x%06X| %d %d %d", function_id, p1, p2, p3);
-    }
     #endif
     switch (function_id) {
-        case VFUNC_SCREEN_PIXEL:
-            vgp_screen_pixel(p1, p2, p3);
-            return 0;
         default:
             break;
     }

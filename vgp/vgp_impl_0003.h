@@ -3,6 +3,7 @@
 */
 #ifndef vgp_impl_0003_h
 #define vgp_impl_0003_h
+#include <vgp_config.h>
 
 #if (VGP_FEATURE_SAVE > 0)
 

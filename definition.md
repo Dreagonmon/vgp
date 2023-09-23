@@ -19,7 +19,7 @@
 | feature id | return | note |
 |:----:|:----:|:----:|
 | 0x00 | 12bit宽，12bit高 | 获取屏幕大小(必须支持) |
-| 0x01 | 1:黑白，2:rgb888 | 获取屏幕颜色格式(必须支持) |
+| 0x01 | 1:mvlsb，2:gs8 | 获取屏幕颜色格式(必须支持) |
 | 0x02 | 1:是，0:否 | 是否支持gamepad输入 |
 | 0x03 | >0:是且最大容量为返回值，<=0:否 | 是否支持SAV存档 |
 | 0x04 | 1:是，0:否 | 是否支持RTC时间 |
@@ -40,15 +40,13 @@
 
 ### Features Must Have 0x0001
 
-* void screen_pixel(int32 x, int32 y, int32 color)
+* void update_screen_buffer(int8 *buffer_p)
 
-  在屏幕上绘制一个像素点，如果坐标超出屏幕，什么都不会发生
+  更新屏幕内容，buffer需要足够大以放下整个屏幕
 
   vinit()和vloop()调用结束时才会真正刷新屏幕
 
-  - x: x坐标
-  - y: y坐标
-  - color: 点的颜色
+  - buffer_p: 指向wasm内存中屏幕缓冲区的指针
 
 * int32 cpu_ticks_ms(void)
 
@@ -114,7 +112,7 @@
 # VGP 方法列表
 | feature set | function id | function name |
 |:----:|:----:|:----:|
-| 0x0001 | 0x000100 | screen_pixel |
+| 0x0001 | 0x000100 | update_screen_buffer |
 | 0x0001 | 0x000101 | cpu_ticks_ms |
 | 0x0001 | 0x000102 | trace_put_char |
 | 0x0001 | 0x000103 | system_exit |

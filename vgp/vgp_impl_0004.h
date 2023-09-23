@@ -3,6 +3,7 @@
 */
 #ifndef vgp_impl_0004_h
 #define vgp_impl_0004_h
+#include <vgp_config.h>
 
 #if (VGP_FEATURE_RTC > 0)
 

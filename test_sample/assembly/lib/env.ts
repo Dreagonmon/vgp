@@ -29,7 +29,7 @@ export const VFEATURE_GAMEPAD_SUPPORT: i32 = 0x0002;
 export const VFEATURE_SAVE_CAPACITY: i32 = 0x0003;
 export const VFEATURE_RTC_SUPPORT: i32 = 0x0004;
 
-export const VFUNC_SCREEN_PIXEL: i32 = 0x000100;
+export const VFUNC_UPDATE_SCREEN_BUFFER: i32 = 0x000100;
 export const VFUNC_CPU_TICKS_MS: i32 = 0x000101;
 export const VFUNC_TRACE_PUT_CHAR: i32 = 0x000102;
 export const VFUNC_SYSTEM_EXIT: i32 = 0x000103;
@@ -44,13 +44,13 @@ export const VFUNC_RTC_SET_L32: i32 = 0x000403;
 
 /* ======== Feature Must Have ======== */
 
-export const VCOLOR_FORMAT_BW: i32 = 1;
-export const VCOLOR_FORMAT_RGB888: i32 = 2;
+export const VCOLOR_FORMAT_MVLSB: i32 = 1;
+export const VCOLOR_FORMAT_GS8: i32 = 2;
 
 const INT32_MAX: i32 = 0x7FFFFFFF;
 
-export const screen_pixel = (x: i32, y: i32, color: i32): void => {
-    call3(VFUNC_SCREEN_PIXEL, x, y, color);
+export const update_screen_buffer = (bufferPointer: i32): void => {
+    call1(VFUNC_UPDATE_SCREEN_BUFFER, bufferPointer);
 };
 
 export const cpu_ticks_ms = (): i32 => {

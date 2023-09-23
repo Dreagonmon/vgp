@@ -2,8 +2,10 @@
 #include <stdbool.h>
 #include <string.h>
 #include <SDL2/SDL.h>
+#include <vgp.h>
 #include <vgp_impl_0002.h>
 #include <time.h>
+#include <string.h>
 
 #define WINDOW_W ((SCREEN_WIDTH * SCREEN_PIXEL_SCALE))
 #define WINDOW_H ((SCREEN_HEIGHT * SCREEN_PIXEL_SCALE))
@@ -12,9 +14,10 @@ static SDL_Renderer *renderer = NULL;
 static SDL_Window *window = NULL;
 static SDL_Surface *surface = NULL;
 static SDL_Rect rect = { 0 };
-static bool frame_changed = false;
 static bool should_quit = false;
 static int32_t cpu_ticks = 0;
+static uint8_t screen_frame_buffer[SCREEN_BUFFER_SIZE];
+static bool screen_dirty = false;
 #if (VGP_FEATURE_SAVE > 0)
 static char *save_file_name = NULL;
 static uint8_t *save_data = NULL;
@@ -52,14 +55,11 @@ static void sdl_set_color(int32_t color) {
     if (color == 0) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // black
     } else {
-        #if (SCREEN_COLOR_FORMAT == VCOLOR_FORMAT_BW)
+        #if (SCREEN_COLOR_FORMAT == VCOLOR_FORMAT_MVLSB)
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // white
         #endif
-        #if  (SCREEN_COLOR_FORMAT == VCOLOR_FORMAT_RGB888)
-        uint8_t r = color & 0xFF;
-        uint8_t g = (color >> 8) & 0xFF;
-        uint8_t b = (color >> 16) & 0xFF;
-        SDL_SetRenderDrawColor(renderer, r, g, b, 255);
+        #if  (SCREEN_COLOR_FORMAT == VCOLOR_FORMAT_GS8)
+        SDL_SetRenderDrawColor(renderer, color, color, color, 255);
         #endif
     }
 }
@@ -104,7 +104,34 @@ void __hw_draw_pixel(int32_t x, int32_t y, int32_t color) {
     rect.w = SCREEN_PIXEL_SCALE + SCREEN_PIXEL_SIZE_MOD;
     rect.h = SCREEN_PIXEL_SCALE + SCREEN_PIXEL_SIZE_MOD;
     sdl_check_code(SDL_RenderFillRect(renderer, &rect));
-    frame_changed = true;
+}
+
+int32_t __get_mvlsb_pixel_unsafe(uint8_t *buffer, int32_t x, int32_t y) {
+    // MVLSB format
+    uint32_t index = (y >> 3) * SCREEN_WIDTH + x;
+    uint8_t offset = y & 0x07;
+    uint8_t value = (buffer[index] >> offset) & 0x01;
+    return value;
+}
+
+int32_t __get_gs8_pixel_unsafe(uint8_t *buffer, int32_t x, int32_t y) {
+    // GS8 format
+    return buffer[y * SCREEN_WIDTH + x];
+}
+
+void __hw_update_screen_buffer(uint8_t *buffer) {
+    // check memory range
+    vgp_get_memory();
+    if (buffer < vgp_get_mem_start()) {
+        DEBUG_PRINTF("update_screen_buffer: buffer below memory range.");
+        return;
+    }
+    if (buffer + SCREEN_BUFFER_SIZE > vgp_get_mem_end()) {
+        DEBUG_PRINTF("update_screen_buffer: buffer above memory range.");
+        return;
+    }
+    memcpy(screen_frame_buffer, buffer, SCREEN_BUFFER_SIZE);
+    screen_dirty = true;
 }
 
 int32_t __hw_ticks_ms(void) {
@@ -112,11 +139,23 @@ int32_t __hw_ticks_ms(void) {
 }
 
 void __hw_task_each_frame(void) {
-    poll_sdl_events();
-    if (frame_changed) {
-        SDL_RenderPresent(renderer);
-        sdl_check_code(SDL_UpdateWindowSurface(window));
+    if (screen_dirty) {
+        for (int32_t y = 0; y < SCREEN_HEIGHT; y++) {
+            for (int32_t x = 0; x < SCREEN_WIDTH; x++) {
+                #if (SCREEN_COLOR_FORMAT == VCOLOR_FORMAT_MVLSB)
+                int32_t color = __get_mvlsb_pixel_unsafe(screen_frame_buffer, x, y);
+                #endif
+                #if  (SCREEN_COLOR_FORMAT == VCOLOR_FORMAT_GS8)
+                int32_t color = __get_gs8_pixel_unsafe(screen_frame_buffer, x, y);
+                #endif
+                __hw_draw_pixel(x, y, color);
+            }
+        }
+        screen_dirty = false;
     }
+    SDL_RenderPresent(renderer);
+    sdl_check_code(SDL_UpdateWindowSurface(window));
+    poll_sdl_events();
     cpu_ticks = SDL_GetTicks() & INT32_MAX;
     #if (VGP_FEATURE_SAVE > 0)
     // get time each frame

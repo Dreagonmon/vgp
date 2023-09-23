@@ -2,9 +2,9 @@ import {
     get_feature,
     VFEATURE_SCREEN_SIZE,
     VFEATURE_SCREEN_COLOR_FORMAT,
-    VCOLOR_FORMAT_BW,
-    VCOLOR_FORMAT_RGB888,
-    screen_pixel,
+    VCOLOR_FORMAT_MVLSB,
+    VCOLOR_FORMAT_GS8,
+    update_screen_buffer,
 } from "./env";
 
 const FONT_PETME128_8X8: u8[] = [
@@ -108,8 +108,24 @@ const FONT_PETME128_8X8: u8[] = [
 
 let SCRW: i32 = 0;
 let SCRH: i32 = 0;
-let WHITE: i32 = 0xFFFFFF;
+let SFMT: i32 = 0;
+let WHITE: i32 = 0xFF;
+let BUFFER: usize = 0;
 const BLACK: i32 = 0;
+
+let screen_pixel: (x: i32, y: i32, c: i32) => void = (x, y, c) => {};
+
+const screen_pixel_mvlsb = (x: i32, y: i32, c: i32): void => {
+    const index: u32 = (y >> 3) * SCRW + x;
+    const offset: u8 = (y & 0x07) as u8;
+    const nValue: u8 = (load<u8>(BUFFER + index) & ~(0x01 << offset)) | ((c & 1) << offset) as u8;
+    store<u8>(BUFFER + index, nValue);
+};
+
+const screen_pixel_gs8 = (x: i32, y: i32, c: i32): void => {
+    const index: u32 = y * SCRW + x;
+    store<u8>(BUFFER + index, (c & 0xFF) as u32 as u8 );
+};
 
 export const screen_init = (): void => {
     const data: i32 = get_feature(VFEATURE_SCREEN_SIZE);
@@ -117,13 +133,22 @@ export const screen_init = (): void => {
     const height: i32 = data & 0xFFF;
     SCRW = width;
     SCRH = height;
-    const fmt: i32 = get_feature(VFEATURE_SCREEN_COLOR_FORMAT);
-    if (fmt === VCOLOR_FORMAT_BW) {
+    const SFMT: i32 = get_feature(VFEATURE_SCREEN_COLOR_FORMAT);
+    if (SFMT === VCOLOR_FORMAT_MVLSB) {
         WHITE = 1;
         console.log(`Screen Color: BlackWhite`);
-    } else if (fmt === VCOLOR_FORMAT_RGB888) {
-        WHITE = 0xFFFFFF;
-        console.log(`Screen Width: RGB888`);
+        let yPage: i32 = (SCRH / 8) as i32;
+        if (SCRH % 8 > 0) {
+            yPage += 1;
+        }
+        const bsize: usize = (SCRW * yPage) as usize;
+        BUFFER = heap.alloc(bsize);
+        screen_pixel = screen_pixel_mvlsb;
+    } else if (SFMT === VCOLOR_FORMAT_GS8) {
+        WHITE = 0xFF;
+        console.log(`Screen Width: GS8`);
+        BUFFER = heap.alloc(SCRW * SCRH);
+        screen_pixel = screen_pixel_gs8;
     }
     console.log(`Screen Width: ${SCRW}`);
     console.log(`Screen Height: ${SCRH}`);
@@ -196,7 +221,12 @@ export const draw_center_text = (text: string, areaX: i32, areaY: i32, areaW: i3
     }
 };
 
+export const show = (): void => {
+    update_screen_buffer(BUFFER as u32 as i32);
+}
+
 export const full_screen_text = (text: string): void => {
     fill_screen(BLACK);
     draw_center_text(text, 0, 0, SCRW, SCRH, WHITE);
+    show();
 };

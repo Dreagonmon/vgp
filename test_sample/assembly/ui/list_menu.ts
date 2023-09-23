@@ -3,6 +3,7 @@ import {
     get_screen_height,
     fill_rect,
     draw_center_text,
+    show,
 } from "../lib/bwscreen";
 import {
     get_gamepad_event,
@@ -75,6 +76,7 @@ export class UIListMenu {
         if (offsetY < scrH) {
             fill_rect(0, offsetY, scrW, scrH - offsetY, 0);
         }
+        show();
     }
 
     /**

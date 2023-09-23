@@ -10,9 +10,16 @@
 #define SCREEN_PIXEL_SCALE 8
 #define SCREEN_PIXEL_OFFSET_MOD 1
 #define SCREEN_PIXEL_SIZE_MOD -2
-#define SCREEN_COLOR_FORMAT VCOLOR_FORMAT_BW
+#define SCREEN_COLOR_FORMAT VCOLOR_FORMAT_MVLSB
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
+#if (SCREEN_COLOR_FORMAT == VCOLOR_FORMAT_MVLSB)
+#define SCREEN_BUFFER_SIZE (SCREEN_WIDTH * (SCREEN_HEIGHT / 8))
+#endif
+#if  (SCREEN_COLOR_FORMAT == VCOLOR_FORMAT_GS8)
+#define SCREEN_BUFFER_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT)
+#endif
+
 #if (VGP_FEATURE_GAMEPAD > 0)
 #define KEY_SCAN_CODE_A SDL_SCANCODE_K
 #define KEY_SCAN_CODE_B SDL_SCANCODE_J
@@ -33,7 +40,7 @@
 #endif // (SCREEN_HEIGHT > 0xFFF)
 
 void __hw_init(void);
-void __hw_draw_pixel(int32_t x, int32_t y, int32_t color);
+void __hw_update_screen_buffer(uint8_t *buffer);
 int32_t __hw_ticks_ms(void);
 void __hw_task_each_frame(void);
 void __hw_notify_quit(void);

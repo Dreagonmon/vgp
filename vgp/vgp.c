@@ -3,6 +3,7 @@
 #include <vgp_error.h>
 #include <vgp_runtime.h>
 #include <m3_env.h>
+#include <stdlib.h>
 
 static const char* ERR_NEW_ENV_FAILED = "m3_NewEnvironment failed";
 static const char* ERR_NEW_RUNTIME_FAILED = "m3_NewRuntime failed";
@@ -14,6 +15,8 @@ static const char* ERR_NOT_INITED = "vgp not inited";
 static IM3Environment env = NULL;
 static IM3Runtime runtime = NULL;
 static IM3Function vloop_func = NULL;
+static uint8_t * mem = NULL;
+static uint32_t mem_size = 0;
 
 // Export Functions
 bool vgp_init(uint8_t* wasm, uint32_t fsize) {
@@ -51,13 +54,13 @@ bool vgp_init(uint8_t* wasm, uint32_t fsize) {
     result = m3_RunStart(module);
     __ensure_m3_result(result, false);
     M3Function* func = NULL;
-    m3_FindFunction(&func, runtime, "_start");
+    m3_FindFunction(&func, runtime, "_initialize");
     if (func) {
         result = m3_CallV(func);
         __ensure_m3_result(result, false);
     }
     func = NULL;
-    m3_FindFunction(&func, runtime, "_initialize");
+    m3_FindFunction(&func, runtime, "_start");
     if (func) {
         result = m3_CallV(func);
         __ensure_m3_result(result, false);
@@ -117,4 +120,30 @@ void vgp_get_wasm_error(M3ErrorInfo *o_info) {
     if (runtime != NULL) {
         m3_GetErrorInfo(runtime, o_info);
     }
+}
+
+uint8_t * vgp_get_mem_start(void) {
+    return mem;
+}
+
+uint8_t * vgp_get_mem_end(void) {
+    return mem + mem_size;
+}
+
+// internal function
+void vgp_get_memory(void) {
+    if (runtime != NULL) {
+        mem = m3_GetMemory(runtime, &mem_size, 0);
+    }
+}
+
+uint8_t * __vpointer_to_real(uint32_t vp) {
+    if (runtime != NULL) {
+        vgp_get_memory();
+        if (vp >= mem_size) {
+            return NULL; // out of range
+        }
+        return mem + vp;
+    }
+    return NULL;
 }

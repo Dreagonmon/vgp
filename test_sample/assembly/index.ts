@@ -1,10 +1,6 @@
 // The entry file of your WebAssembly module.
 import {
-  cpu_ticks_ms,
-  ticks_diff,
-} from "./lib/env";
-import {
-  full_screen_text,
+  show,
   screen_init,
 } from "./lib/bwscreen";
 import {
@@ -18,6 +14,7 @@ export function vinit(): void {
   const support_gamepad: bool = gamepad_available();
   console.log(`Gamepad: ${support_gamepad ? "support" : "not support" }`);
   pushUI(new UISlashScreen());
+  show();
 }
 
 export function vloop(): void {
