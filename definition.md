@@ -40,7 +40,7 @@
 
 ### Features Must Have 0x0001
 
-* void update_screen_buffer(int8 *buffer_p)
+* void update_screen_buffer(uint8 *buffer_p)
 
   更新屏幕内容，buffer需要足够大以放下整个屏幕
 

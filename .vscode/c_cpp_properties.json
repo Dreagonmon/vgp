@@ -6,7 +6,6 @@
                 "${workspaceFolder}/vgp",
                 "${workspaceFolder}/wasm3",
                 "${workspaceFolder}/impl_sdl",
-                "${workspaceFolder}/impl_sdl"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
