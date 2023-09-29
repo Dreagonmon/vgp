@@ -86,6 +86,7 @@ WASM_EXPORT("vloop") void vloop() {
             screen_pixel_mvlsb(x, y, last_color & 1);
         }
     }
+    // memset(scr_buf, last_color, scr_buf_real_size);
     last_color = last_color ? 0 : 0xFF;
     update_screen_buffer(scr_buf);
 }
