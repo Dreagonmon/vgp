@@ -77,7 +77,7 @@ inline uint32_t rtc_get_h32(void) {
 }
 
 inline void rtc_set_h32(uint32_t value) {
-    return call1(VFUNC_RTC_SET_H32, value);
+    call1(VFUNC_RTC_SET_H32, value);
 }
 
 inline uint32_t rtc_get_l32(void) {
@@ -85,5 +85,5 @@ inline uint32_t rtc_get_l32(void) {
 }
 
 inline void rtc_set_l32(uint32_t value) {
-    return call1(VFUNC_RTC_SET_L32, value);
+    call1(VFUNC_RTC_SET_L32, value);
 }

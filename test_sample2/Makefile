@@ -52,7 +52,8 @@ LFLAGS += --gc-sections
 LFLAGS += --lto-O3
 # stack and memory size
 LFLAGS += -z stack-size=4096
-LFLAGS += --initial-memory=65536
+# LFLAGS += --initial-memory=65536
+# LFLAGS += --import-memory
 
 
 all: $(TARGET_WASM) $(TARGET_WAT)

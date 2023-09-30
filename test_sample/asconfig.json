@@ -25,9 +25,8 @@
     "runtime": "incremental",
     "importMemory": true,
     "initialMemory": 1,
-    "maximumMemory": 1,
     "noExportMemory": true,
-    "zeroFilledMemory": true,
+    "zeroFilledMemory": false,
     "memoryBase": 4096,
     "use": [
       "abort=assembly/lib/env/system_exit",
