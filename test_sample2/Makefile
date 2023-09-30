@@ -9,7 +9,15 @@ WASM2WAT = wasm2wat
 SIZE = llvm-size
 
 # SRC += $(wildcard *.c littlefs/*.c)
-SRC += $(wildcard *.c env/*.c)
+SRC += $(wildcard *.c)
+SRC += $(wildcard env/*.c)
+SRC += $(wildcard libc/*.c)
+SRC += $(wildcard libc/math/*.c)
+SRC += $(wildcard libc/ctype/*.c)
+SRC += $(wildcard libc/string/*.c)
+SRC += $(wildcard libc/stdlib/*.c)
+SRC += $(wildcard libc/umm_malloc/*.c)
+SRC += $(wildcard libc/xprintf/*.c)
 OBJ := $(SRC:%.c=$(BUILD)/%.o)
 
 # target
@@ -20,6 +28,13 @@ CFLAGS += -fvisibility=hidden
 CFLAGS += -ffunction-sections
 CFLAGS += -fdata-sections
 CFLAGS += -flto
+CFLAGS += -foptimize-sibling-calls
+# wasm3 support features
+CFLAGS += -mmutable-globals
+CFLAGS += -mnontrapping-fptoint
+CFLAGS += -msign-ext
+CFLAGS += -mmultivalue
+CFLAGS += -mbulk-memory
 # opt
 ifdef DEBUG
 CFLAGS += -O0 -g3
@@ -28,6 +43,7 @@ CFLAGS += -Os
 endif
 # include header
 CFLAGS += -Ienv
+CFLAGS += -Ilibc
 
 # link
 LFLAGS += --no-entry
