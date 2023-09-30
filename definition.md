@@ -52,7 +52,7 @@
 
   获取不精确的CPU时间，单位ms，超过INT32_MAX之后从0开始，适用循环相减法判断时间差
 
-* void trace_put_char(int32 ascii_byte)
+* void trace_put_char(int8 ascii_byte)
 
   输出一个ascii字符到控制台
 
@@ -62,7 +62,7 @@
 
 ### Feature Gamepad 0x0002
 
-* int32 gamepad_status(void)
+* uint32 gamepad_status(void)
 
   返回游戏手柄按键状态，直到下一次vloop()被调用之前，该函数获取到的状态不会改变
 
@@ -77,7 +77,7 @@
 
 ### Feature Save 0x0003
 
-* void save_write(int32 offset, int32 byte)
+* void save_write(uint32 offset, uint8 byte)
 
   写入1字节存档，在调用save_flush()之前，所有存档更改不会被写入存储设备
 
@@ -85,7 +85,7 @@
 
   将存档更改写入存储设备
 
-* int32 save_read(int32 offset)
+* uint8 save_read(uint32 offset)
 
   读取1字节存档，写入之后立刻就能读取到，无论是否写入存储设备
 
@@ -93,19 +93,19 @@
 
 真实时间计算公式为: 时间 = ((offset & 0x7FFFFF) << 32) | (rtc & 0xFFFFFF)
 
-* int32 rtc_get_h32()
+* uint32 rtc_get_h32(void)
 
-  获取RTC的秒数高32位，符号位1则为负
+  获取RTC的秒数高32位，符号位忽略
 
-* void rtc_set_h32(int32 value)
+* void rtc_set_h32(uint32 value)
 
-  设置RTC的秒数高32位，符号位1则为负
+  设置RTC的秒数高32位，符号位忽略
 
-* int32 rtc_get_l32()
+* uint32 rtc_get_l32(void)
 
   获取RTC的秒数低32位，符号位忽略
 
-* void rtc_set_l32(int32 value)
+* void rtc_set_l32(uint32 value)
 
   设置RTC的秒数低32位，符号位忽略
 
