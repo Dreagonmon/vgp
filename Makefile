@@ -49,3 +49,8 @@ run: $(TARGET)
 	@chmod +x $(TARGET)
 	@echo ================================
 	@$(TARGET) test_sample/build/debug.wasm
+
+run2: $(TARGET)
+	@chmod +x $(TARGET)
+	@echo ================================
+	@$(TARGET) test_sample2/build/test.wasm

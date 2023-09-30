@@ -1,4 +1,4 @@
-# Virtual Gamp Pocket
+# Virtual Game Pocket
 
 A wasm virtual game console.
 
