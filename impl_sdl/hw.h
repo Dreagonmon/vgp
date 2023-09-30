@@ -51,8 +51,8 @@ void *__hw_load_wasm(const char *wasm_path, size_t *data_size);
 int32_t __hw_get_gamepad_status(void);
 #endif // (VGP_FEATURE_GAMEPAD > 0)
 #if (VGP_FEATURE_SAVE > 0)
-uint8_t *__hw_get_save_buffer();
-void __hw_commit_save_buffer();
+uint8_t *__hw_get_save_buffer(void);
+void __hw_commit_save_buffer(void);
 #endif // (VGP_FEATURE_SAVE > 0)
 #if (VGP_FEATURE_RTC > 0)
 uint64_t __hw_get_timestamp(void);

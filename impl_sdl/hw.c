@@ -74,7 +74,7 @@ static void poll_sdl_events() {
     }
 }
 
-void __hw_init() {
+void __hw_init(void) {
     sdl_check_code(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER));
     window = SDL_CreateWindow("VGP",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -265,7 +265,7 @@ int32_t __hw_get_gamepad_status(void) {
 #endif
 
 #if (VGP_FEATURE_SAVE > 0)
-uint8_t *__hw_get_save_buffer() {
+uint8_t *__hw_get_save_buffer(void) {
     if (save_data == NULL) {
         if (save_file_name != NULL) {
             save_data = malloc(sizeof(uint8_t) * SAVE_CAPACITY);
@@ -293,7 +293,7 @@ uint8_t *__hw_get_save_buffer() {
     return save_data;
 }
 
-void __hw_commit_save_buffer() {
+void __hw_commit_save_buffer(void) {
     if (save_data == NULL) {
         DEBUG_PRINTF("Save buffer not inited.");
     } else {
@@ -315,7 +315,7 @@ void __hw_commit_save_buffer() {
 
 #if (VGP_FEATURE_RTC > 0)
 #define _RTC_DATA_SIZE (sizeof(int64_t))
-int64_t __hw_get_rtc_offset() {
+int64_t __hw_get_rtc_offset(void) {
     if (rtc_offset == NULL) {
         if (rtc_file_name != NULL) {
             rtc_offset = malloc(_RTC_DATA_SIZE);

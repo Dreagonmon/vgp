@@ -2,11 +2,11 @@
 #include <hw.h>
 #include <stdio.h>
 
-int32_t vgp_screen_get_size() {
+int32_t vgp_screen_get_size(void) {
     return ((SCREEN_WIDTH & 0xFFF) << 12) | (SCREEN_HEIGHT & 0xFFF);
 }
 
-int32_t vgp_screen_get_color_format() {
+int32_t vgp_screen_get_color_format(void) {
     return SCREEN_COLOR_FORMAT;
 }
 
