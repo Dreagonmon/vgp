@@ -5,6 +5,10 @@
 #include <features.h>
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void *memchr(const void *src, int c, size_t n);
 int memcmp(const void *vl, const void *vr, size_t n);
 void *memcpy(void *restrict dest, const void *restrict src, size_t n);
@@ -28,5 +32,9 @@ char *strtok(char *restrict s, const char *restrict sep);
 char *strsep(char **str, const char *sep);
 
 char *__strchrnul(const char *s, int c);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

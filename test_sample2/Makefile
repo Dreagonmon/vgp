@@ -7,6 +7,7 @@ CC = clang
 LD = wasm-ld
 WASM2WAT = wasm2wat
 SIZE = llvm-size
+ECHO = echo
 
 # SRC += $(wildcard *.c littlefs/*.c)
 SRC += $(wildcard *.c)
@@ -58,25 +59,26 @@ LFLAGS += -z stack-size=4096
 
 all: $(TARGET_WASM)
 
-size: $(OBJ)
-	$(SIZE) -t $^
-
 $(TARGET_WASM): $(OBJ)
-	$(LD) $^ $(LFLAGS) -o $@
-	$(SIZE) $(TARGET_WASM)
+	@$(ECHO) Linking...
+	@$(LD) $^ $(LFLAGS) -o $@
+	@$(SIZE) $(TARGET_WASM)
+	@$(ECHO) done.
 
 $(TARGET_WAT): $(TARGET_WASM)
-	$(WASM2WAT) -o $(TARGET_WAT) $(TARGET_WASM)
+	@$(WASM2WAT) -o $(TARGET_WAT) $(TARGET_WASM)
 
 $(BUILD)/%.o: %.c
-	mkdir -p $(dir $@)
-	$(CC) -c -MMD $(CFLAGS) $< -o $@
+	@mkdir -p $(dir $@)
+	@$(CC) -c -MMD $(CFLAGS) $< -o $@
 
 clean:
-	rm -f $(TARGET_WASM)
-	rm -f $(TARGET_WAT)
-	rm -f $(OBJ)
+	@$(ECHO) Cleaning...
+	@rm -f $(TARGET_WASM)
+	@rm -f $(TARGET_WAT)
+	@rm -f $(OBJ)
+	@$(ECHO) done.
 
 run: all
-	@echo ================================
+	@$(ECHO) ================================
 	../build/vgp_main $(TARGET_WASM)

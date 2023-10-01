@@ -3,6 +3,10 @@
 
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define RAND_MAX (0x7fffffff)
 
 typedef struct { int quot, rem; } div_t;
@@ -31,5 +35,9 @@ long long llabs(long long a);
 lldiv_t lldiv(long long num, long long den);
 int rand(void);
 void srand(unsigned s);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

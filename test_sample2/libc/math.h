@@ -1,6 +1,10 @@
 #ifndef _MATH_H
 #define _MATH_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define fpclassify(x)        (__builtin_fpclassify(FP_NAN, FP_INFINITE, \
                                                    FP_NORMAL, FP_SUBNORMAL, \
                                                    FP_ZERO, x))
@@ -38,5 +42,9 @@ float       fmaxf(float, float);
 
 double      fmin(double, double);
 float       fminf(float, float);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
