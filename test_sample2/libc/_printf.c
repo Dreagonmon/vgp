@@ -7,8 +7,10 @@
 inline int putchar(int ch) {
     if (isascii(ch)) {
         trace_put_char(ch);
+        return ch;
     } else {
         trace_put_char('?');
+        return '?';
     }
 }
 
