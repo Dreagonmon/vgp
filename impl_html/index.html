@@ -3,33 +3,283 @@
 
 <head>
   <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+  <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
   <title>Virtual Game Pocket</title>
   <script type="module">
     import { VirtualGamePocket } from "./vgp.js";
-    let vgp = null;
+
+    let vgp = new VirtualGamePocket();
+    const touchMap = new Map();
+
+    const processKeyEvent = (keyCode, status) => {
+      switch (keyCode) {
+        case "KeyW":
+        case "ArrowUp":
+          vgp.setKeyUpStatus(status);
+          break;
+        case "KeyS":
+        case "ArrowDown":
+          vgp.setKeyDownStatus(status);
+          break;
+        case "KeyA":
+        case "ArrowLeft":
+          vgp.setKeyLeftStatus(status);
+          break;
+        case "KeyD":
+        case "ArrowRight":
+          vgp.setKeyRightStatus(status);
+          break;
+        case "KeyK":
+        case "Enter":
+          vgp.setKeyAStatus(status);
+          break;
+        case "KeyJ":
+        case "Escape":
+          vgp.setKeyBStatus(status);
+          break;
+        default: return false;
+      }
+      return true;
+    };
+
+    const ainit = () => {
+      vgp.vinit();
+      vgp.doBetweenFrames();
+    };
+
+    const aloop = () => {
+      vgp.vloop();
+      vgp.doBetweenFrames();
+      if (!vgp.isExited()) {
+        setTimeout(aloop, 0.0002);
+      }
+    };
+
+    const astart = () => {
+      ainit();
+      aloop();
+    };
+
+    const onTouchPadStart = (event) => {
+      event.preventDefault();
+      const pad = event.target;
+      const padRect = pad.getBoundingClientRect();
+      const w = pad.clientHeight * 2;
+      const h = pad.clientHeight;
+      const w4 = w / 4;
+      const w2 = w / 2;
+      const h2 = h / 2;
+      for (const tch of event.changedTouches) {
+        const tx = tch.clientX - padRect.x;
+        const ty = tch.clientY - padRect.y;
+        let keyCode = "";
+        if (tx < w4) {
+          keyCode = "Escape";
+        } else if (tx > w - w4) {
+          keyCode = "Enter";
+        } else {
+          const relx = tx - w2;
+          const rely = ty - h2;
+          if (relx < 0) {
+            if (Math.abs(rely) < Math.abs(relx)) {
+              keyCode = "ArrowLeft";
+            } else if (rely < 0) {
+              keyCode = "ArrowUp";
+            } else {
+              keyCode = "ArrowDown";
+            }
+          } else {
+            if (Math.abs(rely) < Math.abs(relx)) {
+              keyCode = "ArrowRight";
+            } else if (rely < 0) {
+              keyCode = "ArrowUp";
+            } else {
+              keyCode = "ArrowDown";
+            }
+          }
+        }
+        console.log("KeyDown:", keyCode);
+        if (keyCode) {
+          touchMap.set(tch.identifier, keyCode);
+          processKeyEvent(keyCode, true);
+        }
+      }
+    };
+
+    const onTouchPadEnd = (event) => {
+      for (const tch of event.changedTouches) {
+        const tid = tch.identifier;
+        if (touchMap.has(tid)) {
+          processKeyEvent(touchMap.get(tid), false);
+          touchMap.delete(tid);
+        }
+      }
+    };
+
+    const drawTouchPad = () => {
+      const pad = document.querySelector("#touchpad");
+      // draw canvas
+      pad.height = pad.clientHeight;
+      pad.width = pad.clientHeight * 2;
+      const ctx = pad.getContext("2d");
+      ctx.fillStyle = "black";
+      ctx.strokeStyle = "white";
+      const w = pad.clientHeight * 2;
+      const h = pad.clientHeight;
+      const w4 = w / 4;
+      const w16 = w / 16;
+      const w2 = w / 2;
+      const h2 = h / 2;
+      ctx.fillRect(0, 0, w, h);
+      ctx.beginPath();
+      ctx.moveTo(0, 1);
+      ctx.lineTo(w, 1);
+      ctx.moveTo(w4, 0);
+      ctx.lineTo(w4, h);
+      ctx.moveTo(w - w4, 0);
+      ctx.lineTo(w - w4, h);
+      ctx.moveTo(w4 + w16, w16);
+      ctx.lineTo(w2 - w16, h2 - w16);
+      ctx.moveTo(w - w4 - w16, w16);
+      ctx.lineTo(w2 + w16, h2 - w16);
+      ctx.moveTo(w4 + w16, h - w16);
+      ctx.lineTo(w2 - w16, h2 + w16);
+      ctx.moveTo(w - w4 - w16, h - w16);
+      ctx.lineTo(w2 + w16, h2 + w16);
+      ctx.stroke();
+    };
+
+    const listenTouchPadEvent = () => {
+      const pad = document.querySelector("#touchpad");
+      pad.addEventListener("touchstart", onTouchPadStart);
+      pad.addEventListener("touchend", onTouchPadEnd);
+    };
+
+    const initTouchPad = () => {
+      drawTouchPad();
+      listenTouchPadEvent();
+      window.addEventListener("resize", drawTouchPad);
+    };
 
     window.addEventListener("load", async () => {
+      // init touch pad
+      initTouchPad();
+      // get query string
+      const url = new URL(location.toString());
+      const wasmUrl = url.searchParams.get("wasm");
+      // init vgp
+      const cvs = document.querySelector("#display");
+      const out = document.querySelector("#output");
       vgp = new VirtualGamePocket();
-      await vgp.loadStream(fetch("debug.wasm"), "debug.wasm");
-      // await vgp.loadStream(fetch("test.wasm"), "test.wasm");
+      vgp.bindPrintElement(out);
+      vgp.bindDisplayElement(cvs);
+      if (wasmUrl) {
+        await vgp.loadHttp("debug.wasm");
+        astart();
+      } else {
+        out.innerText = `Useage:\n${url.protocol}//${url.host}${url.pathname}?wasm=[url_to_wasm_file]\n\nWASD / ↑←↓→: DPad\nJ K / Esc Enter: B A`;
+      }
+    });
+
+    window.addEventListener("keydown", (evt) => {
+      if (vgp === null) {
+        return;
+      }
+      if (processKeyEvent(evt.code, true)) {
+        evt.preventDefault();
+      }
+    });
+
+    window.addEventListener("keyup", (evt) => {
+      if (vgp === null) {
+        return;
+      }
+      if (processKeyEvent(evt.code, false)) {
+        evt.preventDefault();
+      }
     });
   </script>
   <style>
     * {
       box-sizing: border-box;
+      color: white;
+      border-color: white;
+      background-color: black;
     }
 
     *:not(hr, br) {
       margin: 0;
       padding: 0;
     }
+
+    body,
+    html {
+      width: 100%;
+      height: 100%;
+    }
+
+    .flex-row,
+    .flex-col {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .flex-col {
+      flex-direction: column;
+    }
+
+    .flex-fix {
+      flex-grow: 0;
+      flex-shrink: 0;
+    }
+
+    .flex-auto {
+      flex: 1 1 auto;
+    }
+
+    .w-full {
+      width: 100%;
+    }
+
+    .h-full {
+      height: 100%;
+    }
+
+    .scroll {
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .gap1 {
+      gap: 0.5rem;
+    }
+
+    .pd1 {
+      padding: 0.5rem;
+    }
+
+    .mt1 {
+      margin: 0.5rem;
+    }
+
+    @media (((max-height: 1280px) or (max-width: 1024px)) and (orientation: landscape)) or (not (pointer:coarse)) {
+      #touchpad {
+        display: none;
+      }
+    }
   </style>
 </head>
 
-<body id="container">
-  <h1>Hello</h1>
-  <hr />
-  124
+<body class="flex-col">
+  <div id="content" class="w-full h-full flex-col" style="max-width: 1024px; justify-content: start;">
+    <code id="output" class="pd1 flex-auto w-full h-full scroll"
+      style="word-wrap: break-word; white-space: pre-wrap;"></code>
+    <hr class="flex-fix w-full" />
+    <canvas id="display" class="w-full flex-fix mt1" style="aspect-ratio: 128 / 64;"></canvas>
+    <canvas id="touchpad" class="w-full flex-fix" style="aspect-ratio: 2 / 1;"></canvas>
+  </div>
 </body>
 
 </html>
