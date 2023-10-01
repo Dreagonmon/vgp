@@ -175,7 +175,7 @@
       vgp.bindPrintElement(out);
       vgp.bindDisplayElement(cvs);
       if (wasmUrl) {
-        await vgp.loadHttp("debug.wasm");
+        await vgp.loadHttp(wasmUrl);
         astart();
       } else {
         out.innerText = `Useage:\n${url.protocol}//${url.host}${url.pathname}?wasm=[url_to_wasm_file]\n\nWASD / ↑←↓→: DPad\nJ K / Esc Enter: B A`;

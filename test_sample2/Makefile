@@ -56,7 +56,7 @@ LFLAGS += -z stack-size=4096
 # LFLAGS += --import-memory
 
 
-all: $(TARGET_WASM) $(TARGET_WAT)
+all: $(TARGET_WASM)
 
 size: $(OBJ)
 	$(SIZE) -t $^
