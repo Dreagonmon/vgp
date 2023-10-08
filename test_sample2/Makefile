@@ -19,6 +19,9 @@ SRC += $(wildcard libc/string/*.c)
 SRC += $(wildcard libc/stdlib/*.c)
 SRC += $(wildcard libc/umm_malloc/*.c)
 SRC += $(wildcard libc/xprintf/*.c)
+SRC += $(wildcard time/*.c)
+SRC += $(wildcard gamepad/*.c)
+SRC += $(wildcard graphic/*.c)
 OBJ := $(SRC:%.c=$(BUILD)/%.o)
 
 # target
@@ -45,6 +48,9 @@ endif
 # include header
 CFLAGS += -Ienv
 CFLAGS += -Ilibc
+CFLAGS += -Itime
+CFLAGS += -Igamepad
+CFLAGS += -Igraphic
 
 # link
 LFLAGS += --no-entry

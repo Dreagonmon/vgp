@@ -1,61 +1,28 @@
 #include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include <env.h>
 #include <_malloc.h>
 
-#define SCR_BUF_SIZE 4096
-static uint8_t *scr_buf = 0;
-static int32_t scr_buf_real_size = 0;
-static uint8_t last_color = 0;
-static int32_t sw;
-static int32_t sh;
+#include "screen.h"
+#include "framebuf.h"
 
-void init_screen(void) {
-    int32_t sfmt = get_feature(VFEATURE_SCREEN_COLOR_FORMAT);
-    if (sfmt != VCOLOR_FORMAT_MVLSB) {
-        printf("screen format not support.\n");
-        system_exit();
-    }
-    int32_t ssz = get_feature(VFEATURE_SCREEN_SIZE);
-    sw = (ssz >> 12) & 0xFFF;
-    sh = ssz & 0xFFF;
-    scr_buf_real_size = sw * (sh / 8);
-    scr_buf = malloc(scr_buf_real_size);
-    for (int i = 0; i < scr_buf_real_size; i++) {
-        scr_buf[i] = 0;
-    }
-    last_color = 0;
-    update_screen_buffer(scr_buf);
+void init(void) {
+    size_t mems = _init_memory(1);
+    printf("Total Memory Available: %lu\n", mems);
+    screen_init();
+    gfb_clear(get_frame_buffer(), COLOR_CLEAR);
+    screen_flush();
 }
 
-void screen_pixel_mvlsb(int32_t x, int32_t y, int32_t c) {
-    uint32_t index = (y >> 3) * sw + x;
-    uint8_t offset = y & 0x07;
-    uint8_t nValue = (scr_buf[index] & ~(0x01 << offset)) | (uint8_t)((c & 1) << offset);
-    scr_buf[index] = nValue;
-};
+void game_init(void);
+void game_loop(void);
 
 WASM_EXPORT("vinit") void vinit() {
-    char buf[256];
-    size_t mems = _init_memory(2);
-    printf("Total Memory Available: %lu\n", mems);
-    sprintf(buf, "NUM: %lu", mems);
-    printf("mems: %lu\n", mems);
-    printf("buf: %s\n", buf);
-    init_screen();
+    init();
+    screen_flush();
+    game_init();
 }
 
 WASM_EXPORT("vloop") void vloop() {
-    // trace_uint32(last_color);
-    // for (int y = 0; y < sh; y++) {
-    //     for (int x = 0; x < sw; x++) {
-    //         screen_pixel_mvlsb(x, y, last_color & 1);
-    //     }
-    // }
-    memset(scr_buf, last_color, scr_buf_real_size);
-    last_color = last_color ? 0 : 0xFF;
-    update_screen_buffer(scr_buf);
+    game_loop();
 }

@@ -8,7 +8,10 @@
                 "${workspaceFolder}/impl_sdl",
                 "${workspaceFolder}/test_sample2",
                 "${workspaceFolder}/test_sample2/env",
-                "${workspaceFolder}/test_sample2/libc"
+                "${workspaceFolder}/test_sample2/libc",
+                "${workspaceFolder}/test_sample2/time",
+                "${workspaceFolder}/test_sample2/gamepad",
+                "${workspaceFolder}/test_sample2/graphic"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
